@@ -1,0 +1,60 @@
+# OS/editor
+Thumbs.db
+.DS_Store
+*.swp
+*.swo
+__pycache__/
+*.pyc
+*.pyo
+*.lock
+
+# Large binary/data
+*.sqlite
+*.sqlite3
+*.db
+*.7z
+*.rar
+*.zip
+*.SPAK
+*.spak
+
+# Research artifacts
+extracted/
+decoded/
+wiki_raw/
+tools/
+
+# Large CSVs
+analysis/csv/
+*.csv
+
+# Excel
+*.xlsx
+*.xls
+
+# Local runtime
+*.dmp
+*.pml
+*.etl
+*.log
+Temp/
+capture/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Large docs (>1MB)
+analysis/*_VALIDATION*.md
+analysis/*_CALLCHAIN*.md
+analysis/*_MATRIX*.csv
+analysis/*_MANIFEST*.md
+analysis/*_RESEARCH*.md
+analysis/*_REPORT*.md
