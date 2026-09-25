@@ -2,11 +2,13 @@
 
 ## Hierarchy
 
-1. **Binary field with proven schema** → `BINARY_CONFIRMED`
-2. **Parser/schema with proven semantic** → `CLIENT_FACT`
-3. **Client consumer reference** → `DERIVED`
-4. **Structural correlation** → `PROBABLE`
-5. **External reference** → `EXTERNAL_REFERENCE`
+1. `BINARY_CONFIRMED` — Binary field with proven schema (monster level field2, item type field from `iteminfo.edt`, etc.)
+2. `CLIENT_FACT` — Parsed client facts with validated semantic (NPC identity from client references, map name from `map_info.edt`, quest descriptions from `flag.edt`)
+3. `DERIVED` — Calculated/inferred from confirmed data (progression band from monster level distribution, monster_per_map assignment, equipment progression order)
+4. `PROBABLE` — Structural correlation/equality without runtime consumer (NPC name from `monsters.edt`, quest ↔ NPC ID overlap)
+5. `EXTERNAL_REFERENCE` — Wiki/community/game knowledge (job names, level requirements)
+6. `UNRESOLVED` — No evidence available (quest chain, drop table, 1,635 NPC names)
+7. `DEFERRED` — Not investigated (drop rate, skill effect)
 
 ## Canonical Evidence Labels
 

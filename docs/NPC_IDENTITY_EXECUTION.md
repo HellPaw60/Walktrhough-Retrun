@@ -16,9 +16,11 @@ Resolve NPC identity (names) for all NPCs that have dialog or placement data, an
 
 ## Evidence Hierarchy
 
-1. `BINARY_CONFIRMED` — Names from `monsters.edt` (same binary source as NPC IDs)
-2. `PROBABLE` — talk_id ↔ NPC ID overlap (correlation, no consumer runtime)
-3. `UNRESOLVED` — No evidence found
+1. `BINARY_CONFIRMED` — Direct binary field with proven schema (monster level field2, item type field, etc.)
+2. `CLIENT_FACT` — NPC identity existence (ID from client references: locations, dialog, quest nodes)
+3. `PROBABLE` — NPC name resolution (293 names from `monsters.edt`, correlation without runtime consumer)
+4. `PROBABLE` — Structural correlation (talk_id/group_id/action_id ↔ NPC ID overlap)
+5. `UNRESOLVED` — No evidence found
 
 ## NPC Names Resolved (Historical State)
 
@@ -79,10 +81,10 @@ Resolve NPC identity (names) for all NPCs that have dialog or placement data, an
 
 | Level | Count | Description |
 |---|---|---|
-| `CLIENT_FACT` | 1,928 | NPC identity exists (ID from client references) |
-| `PROBABLE` | 293 | NPC name from `monsters.edt` (correlation) |
-| `PROBABLE` | 3,674 | Quest ↔ NPC ID overlap (candidates) |
-| `UNRESOLVED` | 1,635 | NPC names not found |
+| `CLIENT_FACT` | 1,928 | NPC identity exists (ID from client references: locations, dialog, quest nodes) |
+| `PROBABLE` | 293 | NPC name from `monsters.edt` (correlation, no runtime consumer) |
+| `PROBABLE` | 3,674 | Quest ↔ NPC ID overlap (structural correlation) |
+| `UNRESOLVED` | 1,635 | NPC names not found in client |
 
 ## Validation Results
 

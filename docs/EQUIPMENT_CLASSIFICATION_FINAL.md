@@ -6,7 +6,7 @@ Items classified by `type` field from client binary (`iteminfo.edt`):
 
 | Type | Category | Count (approx) | Notes |
 |---|---|---|---|
-| 1 | **MIXED** | ~113 | NOT automatically Weapon — subclassified by name heuristic and stats |
+| 1 | **MIXED** | 113 | NOT automatically Weapon — subclassified by name heuristic and stats |
 | 4 | ARMOR | — | Binary type=4 |
 | 6 | SHIELD | — | Binary type=6 |
 | 7 | HELMET | — | Binary type=7 |
@@ -24,7 +24,7 @@ Items classified by `type` field from client binary (`iteminfo.edt`):
 
 ### Type=1 Classification Detail
 
-Type=1 is **mixed** — NOT all weapons. From 1,113 type=1 items:
+Type=1 is **mixed** — NOT all weapons. From 113 type=1 items:
 - 66 classified as FOOD (by name)
 - 23 classified as PLACEHOLDER
 - 7 classified as POTION
