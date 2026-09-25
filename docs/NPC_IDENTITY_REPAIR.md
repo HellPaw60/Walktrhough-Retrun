@@ -10,11 +10,11 @@ Previous execution (commit b2dcd5ba) incorrectly **reduced** `npc_identity` from
 
 | Source | Count | Evidence |
 |---|---|---|
-| quest_dialog_nodes (group_id) | 1,486 | Binary quest structure |
-| npc_dialog | 254 | Binary dialog ownership |
-| npc_locations | 51 | Binary map placement |
-| shops (seller_id) | 149 | Binary shop ownership |
-| Resolved names (monsters.edt) | 293 | Binary monster name field |
+| quest_dialog_nodes (group_id) | 1,486 | `CLIENT_FACT` |
+| npc_dialog | 254 | `CLIENT_FACT` |
+| npc_locations | 51 | `CLIENT_FACT` |
+| shops (seller_id) | 149 | `CLIENT_FACT` |
+| Resolved names (monsters.edt) | 293 | `PROBABLE` |
 
 ## Restoration Method
 
@@ -23,7 +23,7 @@ Previous execution (commit b2dcd5ba) incorrectly **reduced** `npc_identity` from
 3. Applied priority: resolved > location > dialog > seller > group_id
 4. Added group_id entries until total reached 1,928
 5. All 293 resolved names preserved exactly
-6. 1,635 unresolved identities marked as "unknown" with UNRESOLVED confidence
+6. 1,635 unresolved identities marked as "unknown" with `UNRESOLVED` evidence
 
 ## Results
 
@@ -56,7 +56,19 @@ Previous execution (commit b2dcd5ba) incorrectly **reduced** `npc_identity` from
 
 | Area | Status |
 |---|---|
-| 1,635 NPC names | UNRESOLVED (not in client binary) |
-| Quest → NPC semantic | UNRESOLVED (correlation only) |
-| Quest chain | UNRESOLVED |
-| Quest → Monster | UNRESOLVED |
+| 1,635 NPC names | `UNRESOLVED` (not in client binary) |
+| Quest → NPC semantic | `UNRESOLVED` (correlation only) |
+| Quest chain | `UNRESOLVED` |
+| Quest → Monster | `UNRESOLVED` |
+
+## Evidence Legend
+
+| Label | Meaning |
+|---|---|
+| `BINARY_CONFIRMED` | Langsung dari client binary |
+| `CLIENT_FACT` | Dari client, parsed facts |
+| `DERIVED` | Dihitung dari data lain |
+| `PROBABLE` | Correlation, no consumer runtime |
+| `EXTERNAL_REFERENCE` | Wiki/community/game knowledge |
+| `UNRESOLVED` | Tidak ada evidence |
+| `DEFERRED` | Tidak dikerjakan |

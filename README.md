@@ -10,7 +10,7 @@ This repository provides **practical walkthrough guidance** for players of **Sea
 ## What This Repository Contains
 
 - Player progression guide (level 1-100)
-- Walkthrough steps (early game focus)
+- Walkthrough steps
 - Map progression candidates
 - Equipment milestones
 - Monster classification for hunting
@@ -34,7 +34,7 @@ The full research environment remains at `D:\SealR_Database`. This repository co
 ```
 Walktrhough-Retrun/
 ├── README.md              # This file
-├── WALKTHROUGH.md         # Main walkthrough (Level 1-30 early game)
+├── WALKTHROUGH.md         # Main walkthrough (Level 1-100 progression)
 ├── CHANGELOG.md           # Project changelog
 ├── .gitignore             # Excludes large/legacy files
 └── docs/
@@ -51,32 +51,35 @@ Walktrhough-Retrun/
     ├── EQUIPMENT_PROGRESSION.md     # Equipment milestones
     ├── EQUIPMENT_CLASSIFICATION_FINAL.md # Item types
     ├── NPC_IDENTITY_REPAIR.md       # NPC names
+    ├── NPC_IDENTITY_EXECUTION.md    # NPC execution report
     ├── ITEM_ACQUISITION.md          # How to get items
     ├── SKILL_JOB_PROGRESSION.md     # Job/skill info
     └── WALKTHROUGH_ARCHITECTURE.md  # Walkthrough structure
 ```
 
-## Key Facts (Validated)
+## Key Facts
 
-| Fact | Value |
+| Fact | Value | Evidence |
+|---|---|---|
+| MonsterID 1 | Piya (Level 1) | `BINARY_CONFIRMED` |
+| MonsterID 22 | Rascal Rabbit (Level 8) | `BINARY_CONFIRMED` |
+| MonsterID 23 | Rascal Rabbit (Level 8) | `BINARY_CONFIRMED` |
+| NPC Joan | ID 4429 | `PROBABLE` |
+| NPC Arus | ID 4441 | `PROBABLE` |
+| NPC Duran | ID 5288 | `PROBABLE` |
+| NPC Hanaiel | ID 5690 | `PROBABLE` |
+
+## Evidence Legend
+
+| Label | Meaning |
 |---|---|
-| MonsterID 1 | Piya (Level 1) |
-| MonsterID 22 | Rascal Rabbit (Level 8) |
-| NPC Joan | ID 4429 |
-| NPC Arus | ID 4441 |
-| NPC Duran | ID 5288 |
-| NPC Hanaiel | ID 5690 |
-
-## Confidence Levels
-
-| Level | Definition |
-|---|---|
-| CONFIRMED | Binary evidence |
-| PROBABLE | Equality/observation |
-| DERIVED | Calculated |
-| EXTERNAL | Wiki/legacy |
-| UNRESOLVED | No evidence |
-| DEFERRED | Not investigated |
+| `BINARY_CONFIRMED` | Langsung dari client binary |
+| `CLIENT_FACT` | Dari client, parsed facts |
+| `DERIVED` | Dihitung dari data lain |
+| `PROBABLE` | Correlation, no consumer runtime |
+| `EXTERNAL_REFERENCE` | Wiki/community/game knowledge |
+| `UNRESOLVED` | Tidak ada evidence |
+| `DEFERRED` | Tidak dikerjakan |
 
 ## Not Included
 

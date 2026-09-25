@@ -21,7 +21,7 @@
 | 60–74 | **ENDGAME** | Map premium, monster kuat |
 | 75–100 | **LEGEND** | Map tertinggi, monster elite |
 
-**Evidence:** `BINARY_CONFIRMED` — monster level dari `monster.edt` field2, map level dari `map_info.edt` Bale Level
+**Evidence:** `DERIVED` — progression band dihitung dari distribusi monster level (5,161 valid progression monsters, level dari `monster.edt` field2). Band ditentukan oleh kluster level monster yang tersedia di map.
 
 ---
 
@@ -54,7 +54,7 @@
 
 **Variant note:** `[Weak]`, `[Naive]`, `[Happy]` = versi lebih lemah. `[Land Type]`, `[Wet]` = versi spesifik map.
 
-**Evidence:** `BINARY_CONFIRMED` — `monster_progression` table, `map_spawns` table
+**Evidence:** `DERIVED` — monster_progression table (calculated from `monster.edt` field2 + `map_spawns`). Individual monster name/level: `BINARY_CONFIRMED`.
 
 ### Equipment Milestone
 
@@ -68,7 +68,7 @@
 | 5–15 | Wooden Bludgeon.G | ACCESSORY |
 | 5–15 | Japan's Festival Fan | ARMOR |
 
-**Evidence:** `CLIENT_FACT` — `equipment_progression` table
+**Evidence:** `BINARY_CONFIRMED` — `item_classification` table, binary type field dari `iteminfo.edt` (type=9→ACCESSORY, type=4→ARMOR, type=11→BOOTS, type=7→HELMET, type=6→SHIELD)
 
 ---
 
@@ -102,7 +102,7 @@
 | 16 | Stiff Horse | 18 |
 | 18 | Wood Golem | 17, 31 |
 
-**Evidence:** `BINARY_CONFIRMED` — `monster_progression` + `map_spawns`
+**Evidence:** `DERIVED` — monster_progression + map_spawns
 
 ### Equipment Milestone
 
@@ -120,7 +120,7 @@
 | 15–25 | Piya's Sword.G | SHIELD |
 | 16–26 | Aubergine Dagger.G | HELMET |
 
-**Evidence:** `CLIENT_FACT` — `equipment_progression`
+**Evidence:** `BINARY_CONFIRMED` — item_classification binary type
 
 ---
 
@@ -237,7 +237,7 @@
 
 | Level | Monster | Map |
 |---|---|---|
-| 50 | Tarantula Queen | 62 |
+| 50 | Tarantula Rabbit | 62 |
 | 51 | Steel Golem | 1, 31 |
 | 52 | Samba Cactus | 33 |
 | 52 | Servanguy | 36 |
@@ -321,24 +321,31 @@
 
 | Job | Level Change | Detail |
 |---|---|---|
-| Warrior | L10 | — |
-| Mage | L10 | — |
-| Archer | L10 | — |
-| Priest | L10 | — |
-| Knight | L30 | — |
-| Sorcerer | L30 | — |
-| Ranger | L30 | — |
-| Cleric | L30 | — |
-| Paladin | L60 | — |
-| Arch Mage | L60 | — |
-| Sniper | L60 | — |
-| Templar | L60 | — |
+| Warrior | L10 | Heavy melee DPS |
+| Knight | L10 | Defensive tank |
+| Magician | L10 | Elemental caster |
+| Cleric | L10 | Healer |
+| Hunter | L10 | Ranged DPS |
+| Jester | L10 | Stealth DPS |
+| Craftsman | L10 | Crafter |
 
-**Evidence:** `CLIENT_FACT` — `flag.edt` QuestFlag data
+**Evidence:** `EXTERNAL_REFERENCE` — source `game_knowledge`, bukan dari binary client. Tidak ada job change data di `flag.edt` atau table lain di client. Level requirement (L10 first job) adalah knowledge dari bermain game.
+
+**Catatan:** Job change L30/L60 (second/third job) tidak tercatat di client binary. Silakan konfirmasi ke sumber gameplay.
 
 ---
 
 ## 11. Known NPCs
+
+### NPC Identity
+
+| Metric | Value |
+|---|---|
+| Total NPC identities | 1,928 |
+| Resolved names | 293 |
+| Unresolved names | 1,635 |
+
+### NPC Names (Sample)
 
 | NPC ID | Name | Source |
 |---|---|---|
@@ -347,10 +354,21 @@
 | 5288 | Duran | monsters.edt |
 | 5690 | Hanaiel | monsters.edt |
 
-**Total:** 293 NPC named, 1,635 unresolved (ID exists but name unknown from client binary)
+**Evidence:**
+- Identity exists: `CLIENT_FACT` — `npc_locations` (1,300 placements), `npc_dialog` (793 records), `quest_dialog_nodes` (group_id references)
+- Names resolved: `PROBABLE` — name dari `monsters.edt` (NPC = MonsterID tertentu, tapi tidak ada consumer runtime yang mengkonfirmasi semantic NPC)
+- Names unresolved: `UNRESOLVED` — 1,635 NPC ID tidak ditemukan di `monsters.edt` atau string table
 
-**Evidence:** `BINARY_CONFIRMED` for named, `UNRESOLVED` for rest
-**Source:** `monsters.edt` + `npc_dialog` + `npc_locations`
+### NPC Locations
+
+| Metric | Value |
+|---|---|
+| Total placements | 1,300 |
+| Unique NPC IDs placed | 51 |
+| Unique maps with NPCs | 98 |
+| NPCs with both dialog AND location | 16 |
+
+**Evidence:** `CLIENT_FACT` — `npc_locations` table, data placement diekstrak dari `map/npc*.edt` files
 
 ---
 
@@ -363,10 +381,11 @@
 | Quest → Monster | `UNRESOLVED` | No exact reference in quest.edt binary |
 | Drop table | `UNRESOLVED` | `drop.py` schema exists, no actual file in client |
 | DropRate | `DEFERRED` | Not investigated |
-| Skill semantics | `UNRESOLVED` | 14,402 skill records parsed, effect mapping unknown |
-| NPC locations | `UNRESOLVED` | No binary reference, data not extracted |
+| Skill semantics | `UNRESOLVED` | 14,402 skill records parsed, effect mapping unknown. Skills table di SQLite = 0 (belum di-parse) |
 | Map connection | `UNRESOLVED` | No teleporter/warp data in binary |
 | Quest objective | `UNRESOLVED` | action_id semantics partial |
+| Job progression detail | `EXTERNAL_REFERENCE` | Tidak ada di client binary, source dari gameplay knowledge |
+| 1,635 NPC names | `UNRESOLVED` | Tidak ditemukan di `monsters.edt` atau string table |
 
 ---
 
@@ -374,17 +393,38 @@
 
 | Label | Meaning | Contoh |
 |---|---|---|
-| `BINARY_CONFIRMED` | Langsung dari client binary | monster name, level, stats |
-| `CLIENT_FACT` | Dari client, bukan monster | map name, equipment level |
-| `DERIVED` | Dihitung dari data lain | progression band dari monster level |
-| `PROBABLE` | Equality/correlation, tidak ada consumer | NPC name from monsters.edt |
-| `EXTERNAL_REFERENCE` | Wiki/community cross-reference | — |
-| `UNRESOLVED` | Tidak ada evidence | quest chain, drop table |
+| `BINARY_CONFIRMED` | Langsung dari client binary | item type → slot, monster level (field2) |
+| `CLIENT_FACT` | Dari client, parsed facts | map name, NPC locations, quest descriptions |
+| `DERIVED` | Dihitung dari data lain | progression band, monster_per_map assignment |
+| `PROBABLE` | Equality/correlation, tidak ada consumer runtime | NPC name dari monsters.edt |
+| `EXTERNAL_REFERENCE` | Wiki/community/game knowledge | job names, level requirements |
+| `UNRESOLVED` | Tidak ada evidence | quest chain, drop table, 1,635 NPC names |
 | `DEFERRED` | Tidak dikerjakan | drop rate, skill effect |
 
 ---
 
-## 14. Research Source
+## 14. Canonical Numbers
+
+| Table | Count | Evidence |
+|---|---|---|
+| monsters | 9,999 | `BINARY_CONFIRMED` |
+| items | 16,318 | `BINARY_CONFIRMED` |
+| quest_identity | 717 | `CLIENT_FACT` |
+| quest_dialog_nodes | 39,950 | `CLIENT_FACT` |
+| npc_identity | 1,928 | `CLIENT_FACT` |
+| resolved NPC | 293 | `PROBABLE` |
+| unresolved NPC | 1,635 | `UNRESOLVED` |
+| npc_locations | 1,300 | `CLIENT_FACT` |
+| npc_dialog | 793 | `CLIENT_FACT` |
+| monster_progression | 5,161 | `DERIVED` |
+| map_progression_candidates | 40 | `DERIVED` |
+| map_progression_graph | 1,247 | `DERIVED` |
+| equipment_progression | 125 | `BINARY_CONFIRMED` |
+| skills | 0 | `UNRESOLVED` |
+
+---
+
+## 15. Research Source
 
 Semua data dari **`D:\SealR_Database`**:
 - `extracted/_extracted/` — 29,988 files dari client SPAK/EDT
@@ -392,6 +432,6 @@ Semua data dari **`D:\SealR_Database`**:
 - Monster: 9,999 records (248 bytes, 31×int64 schema)
 - Item: 16,318 records (85 columns)
 - Quest: 717 identity + 39,950 dialog nodes
-- NPC: 1,928 identities (293 named)
+- NPC: 1,928 identities (293 named, 1,635 unresolved)
 
 **Jangan tanya "di tanya ke Discord". Semua data di atas diekstrak langsung dari file client.**

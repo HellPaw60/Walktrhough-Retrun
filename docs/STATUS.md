@@ -15,46 +15,68 @@
 
 ## Walkthrough Coverage
 
-| Level Band | Status |
-|---|---|
-| L1–9 (BEGINNER) | `BINARY_CONFIRMED` |
-| L10–19 (EARLY) | `BINARY_CONFIRMED` |
-| L20–29 (DEVELOPING) | `BINARY_CONFIRMED` |
-| L30–39 (MID) | `BINARY_CONFIRMED` |
-| L40–49 (PROGRESSION) | `BINARY_CONFIRMED` |
-| L50–59 (LATE) | `BINARY_CONFIRMED` |
-| L60–74 (ENDGAME) | `BINARY_CONFIRMED` |
-| L75–100 (LEGEND) | `BINARY_CONFIRMED` |
-
-## Database Summary
-
-| Table | Rows | Status |
+| Level Band | Monster/Map Evidence | Equipment Evidence |
 |---|---|---|
-| monsters | 9,999 | CONFIRMED |
-| items | 16,318 | CONFIRMED |
-| quest_identity | 717 | CONFIRMED |
-| quest_dialog_nodes | 39,950 | CONFIRMED |
-| npc_identity | 1,928 | REPAIRED |
-| npc_locations | 1,300 | CONFIRMED |
-| quest_items | 13,617 | PROBABLE |
-| monster_progression | 5,161 | DERIVED |
-| map_progression_candidates | 40 | DERIVED |
-| map_progression_graph | 1,247 | DERIVED |
-| equipment_progression | 125 | CONFIRMED |
-| player_progression_v2 | 8 | DERIVED |
+| L1–9 (BEGINNER) | `DERIVED` | `BINARY_CONFIRMED` |
+| L10–19 (EARLY) | `DERIVED` | `BINARY_CONFIRMED` |
+| L20–29 (DEVELOPING) | `DERIVED` | `BINARY_CONFIRMED` |
+| L30–39 (MID) | `DERIVED` | `BINARY_CONFIRMED` |
+| L40–49 (PROGRESSION) | `DERIVED` | `BINARY_CONFIRMED` |
+| L50–59 (LATE) | `DERIVED` | `BINARY_CONFIRMED` |
+| L60–74 (ENDGAME) | `DERIVED` | `BINARY_CONFIRMED` |
+| L75–100 (LEGEND) | `DERIVED` | `BINARY_CONFIRMED` |
 
-## Walkthrough
+## Canonical Numbers
 
-- **Level 1-30:** `BINARY_CONFIRMED` (early game, Piya → Elim)
-- **Level 30-60:** `BINARY_CONFIRMED` (Crude Dungeon, Laywook Forest)
-- **Level 60-100:** `BINARY_CONFIRMED` (Sealed Island, Esdelron)
+| Table | Count | Evidence |
+|---|---|---|
+| monsters | 9,999 | `BINARY_CONFIRMED` |
+| items | 16,318 | `BINARY_CONFIRMED` |
+| quest_identity | 717 | `CLIENT_FACT` |
+| quest_dialog_nodes | 39,950 | `CLIENT_FACT` |
+| npc_identity | 1,928 | `CLIENT_FACT` |
+| resolved NPC | 293 | `PROBABLE` |
+| unresolved NPC | 1,635 | `UNRESOLVED` |
+| npc_locations | 1,300 | `CLIENT_FACT` |
+| npc_dialog | 793 | `CLIENT_FACT` |
+| monster_progression | 5,161 | `DERIVED` |
+| map_progression_candidates | 40 | `DERIVED` |
+| map_progression_graph | 1,247 | `DERIVED` |
+| equipment_progression | 125 | `BINARY_CONFIRMED` |
+| skills | 0 | `UNRESOLVED` |
 
-## Key Metrics
+## Key Facts
 
-- Valid progression monsters: 5,161 (excludes 188 sentinels)
-- Equipment entries: 125 (conflict-free)
-- Quest chains: `UNRESOLVED` (no flag transition consumer)
-- NPC names: 293 resolved, 1,635 unresolved
+| Fact | Value | Evidence |
+|---|---|---|
+| MonsterID 1 | Piya | `BINARY_CONFIRMED` |
+| MonsterID 22 | Rascal Rabbit | `BINARY_CONFIRMED` |
+| NPC Joan | ID 4429 | `PROBABLE` |
+| NPC Arus | ID 4441 | `PROBABLE` |
+| NPC Duran | ID 5288 | `PROBABLE` |
+| NPC Hanaiel | ID 5690 | `PROBABLE` |
+
+## Unresolved / Deferred
+
+| Area | Status |
+|---|---|
+| Quest chain | `UNRESOLVED` |
+| Quest → NPC semantic | `UNRESOLVED` |
+| Quest → Monster | `UNRESOLVED` |
+| Drop table | `UNRESOLVED` |
+| DropRate | `DEFERRED` |
+| Skill semantics | `UNRESOLVED` |
+| Map connection | `UNRESOLVED` |
+| Quest objective | `UNRESOLVED` |
+| 1,635 NPC names | `UNRESOLVED` |
+
+## Not Unresolved
+
+| Area | Status | Reason |
+|---|---|---|
+| NPC locations | `CLIENT_FACT` | 1,300 placements extracted from `npc*.edt` |
+| NPC identities | `CLIENT_FACT` | 1,928 IDs from client (dialog/location/quest refs) |
+| Quest descriptions | `CLIENT_FACT` | 717 records from `flag.edt` |
 
 ## Repository
 
