@@ -1,49 +1,59 @@
 # Walkthrough Actions Repaired
 
-## Status: EMPTY (no valid walkthrough yet)
+## Quest Action Graph Status
 
-## Old Model (WRONG)
+**Status:** Canonical quest action graph is EMPTY (0 rows).
+
+This does NOT mean WALKTHROUGH.md is invalid. The walkthrough uses different evidence:
+
+- Monster levels (`monster.edt` field2) → `BINARY_CONFIRMED`
+- Map assignments (`map_spawns`) → `CLIENT_FACT`
+- Equipment slots (`iteminfo.edt` type field) → `BINARY_CONFIRMED`
+- Progression bands (calculated) → `DERIVED`
+
+## Old Model (WRONG — Historical Context)
+
 ```
-walkthrough_actions: 18,466 rows
-- dibangun dari NodeIndex-as-QuestID
+walkthrough_actions: 18,466 rows (DEPRECATED)
+- Built using NodeIndex-as-QuestID
 - TIDAK BOLEH dianggap valid
 ```
 
-## Why It Was Wrong
-- walkthrough_actions lama memakai quest_id yang sebenarnya NodeIndex
-- action_type (TALK_NPC, GO_MAP, KILL_MONSTER, COLLECT_ITEM) diinferensikan dari raw fields tanpa bukti
+## Why Old Model Was Wrong
 
-## New Model
+- Used NodeIndex as QuestID
+- Inferred action_type (TALK_NPC, GO_MAP, KILL_MONSTER) without evidence
+- No consumer runtime found
+
+## Current Model
+
 ```
-walkthrough_actions:
-  quest_id TEXT            -- canonical (FLAG-based, NOT NodeIndex)
-  seq INTEGER              -- sequence in quest
-  action_type TEXT
-  target_type TEXT
-  target_id INTEGER
-  npc_id INTEGER
-  map_id INTEGER
-  monster_id INTEGER
-  item_id INTEGER
-  quantity INTEGER
-  source TEXT
-  evidence TEXT
-  confidence TEXT
+walkthrough_actions: 0 rows (not populated)
+- Quest chain: UNRESOLVED
+- Quest → Monster: UNRESOLVED
+- Quest → NPC semantic: UNRESOLVED
 ```
 
-## Current State
-- walkthrough_actions: 0 rows (no valid graph yet)
+## WALKTHROUGH.md vs Quest Action Graph
 
-## Requirement for Walkthrough
-1. Canonical Quest ID ✅
-2. Quest → Node Mapping ✅
-3. Quest → NPC ⚠️ (PROBABLE equality)
-4. Quest → Item ✅ (PROBABLE)
-5. Quest → Monster ❌ (UNRESOLVED)
-6. Quest Chain ❌ (UNRESOLVED)
+| Area | Status | Source |
+|---|---|---|
+| Monster per level band | ✅ Exists | `monster_progression` (DERIVED from binary) |
+| Map per level band | ✅ Exists | `map_progression_candidates` (DERIVED) |
+| Equipment per level | ✅ Exists | `equipment_progression` (BINARY_CONFIRMED) |
+| Quest objectives | ❌ `UNRESOLVED` | No monster reference in quest.edt |
+| Quest chain | ❌ `UNRESOLVED` | No flag transition consumer |
+| Quest → NPC semantic | ❌ `UNRESOLVED` | ID equality only |
 
-## Recommendation
-Walkthrough final TIDAK BOLEH dibuat sebelum:
-- Quest chain terbukti (flag transition)
-- Monster reference terbukti
-- NPC mapping terbukti
+**WALKTHROUGH.md uses only evidence-backed data.** Quest action graph is a separate research goal.
+
+## Evidence Legend
+
+| Label | Meaning |
+|---|---|
+| `BINARY_CONFIRMED` | Langsung dari client binary |
+| `CLIENT_FACT` | Dari client, parsed facts |
+| `DERIVED` | Dihitung dari data lain |
+| `PROBABLE` | Correlation, no consumer runtime |
+| `UNRESOLVED` | Tidak ada evidence |
+| `DEFERRED` | Tidak dikerjakan |

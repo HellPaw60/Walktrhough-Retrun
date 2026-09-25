@@ -11,19 +11,18 @@ Resolve NPC identity (names) for all NPCs that have dialog or placement data, an
 | `etc/npctalk.edt` | NPC dialog data (254 unique NPCs, 793 dialog entries) |
 | `minimap/npc*.edt` | NPC map placements (111 files, 51 unique NPCs, 1,300 placements) |
 | `monster.edt` | Monster database (9,999 records, 31×int64 schema) |
-| `decoded/_decoded/monster_names.json` | Decoded monster names (9,998 entries, index unreliable) |
 | `quest.edt` | Quest dialog (QuestFile v5, 39,950 nodes) |
 | `flag.edt` | Quest flags (QuestFlagFile v1, 717 records) |
 
 ## Evidence Hierarchy
 
-1. **BINARY_CONFIRMED:** Names from `monsters.edt` (same binary source as NPC IDs)
-2. **PROBABLE_STRUCTURAL_CORRELATION:** talk_id ↔ NPC ID overlap
-3. **UNRESOLVED:** No evidence found
+1. `BINARY_CONFIRMED` — Names from `monsters.edt` (same binary source as NPC IDs)
+2. `PROBABLE` — talk_id ↔ NPC ID overlap (correlation, no consumer runtime)
+3. `UNRESOLVED` — No evidence found
 
-## NPC Names Resolved
+## NPC Names Resolved (Historical State)
 
-| NPC ID | Name | Evidence |
+| NPC ID | Name | Source |
 |---|---|---|
 | 355 | Street Merchant | monsters.edt |
 | 356 | Beggar | monsters.edt |
@@ -42,48 +41,48 @@ Resolve NPC identity (names) for all NPCs that have dialog or placement data, an
 | 5288 | Duran | monsters.edt |
 | 5690 | Hanaiel | monsters.edt |
 
-**Total resolved:** 293 (was 1,928 "unknown")
+### Historical State
 
-**Unresolved:** 0 (all NPCs with dialog/location data have names from monsters table)
+| Metric | Before Repair | After Repair (Current Canonical) |
+|---|---|---|
+| npc_identity total | 293 rows (INCORRECT) | 1,928 rows |
+| Resolved names | 293 | 293 |
+| Unresolved names | 0 (INCORRECT — NPCs dropped) | 1,635 |
+
+**Root Cause:** Previous execution deleted all npc_identity rows and only recreated NPCs with dialog/location/names, dropping 1,635 valid NPC identities. Commit b2dcd5ba incorrectly reduced from 1,928 → 293.
+
+**Current Canonical State:** 1,928 total = 293 resolved + 1,635 unresolved.
+
+**Evidence:**
+- Identity exists (1,928): `CLIENT_FACT` — from `npc_locations` (1,300), `npc_dialog` (793), `quest_dialog_nodes` (group_id)
+- Names resolved (293): `PROBABLE` — from `monsters.edt`, no consumer runtime confirms semantic NPC identity
+- Names unresolved (1,635): `UNRESOLVED` — not found in `monsters.edt` or client string tables
 
 ## Quest → NPC Evidence
 
-| Evidence | Finding | Confidence |
+| Evidence | Finding | Evidence |
 |---|---|---|
-| talk_id ↔ NPC ID overlap | 275 NPCs share ID with talk_id | PROBABLE_STRUCTURAL_CORRELATION |
-| group_id ↔ NPC ID overlap | 174 NPCs share ID with group_id | PROBABLE_STRUCTURAL_CORRELATION |
-| action_id ↔ NPC ID | 289 NPCs share ID with action_id | PROBABLE_STRUCTURAL_CORRELATION |
+| talk_id ↔ NPC ID overlap | 275 NPCs share ID with talk_id | `PROBABLE` |
+| group_id ↔ NPC ID overlap | 174 NPCs share ID with group_id | `PROBABLE` |
+| action_id ↔ NPC ID | 289 NPCs share ID with action_id | `PROBABLE` |
 
-**Decision:** Created `quest_npc_candidates` table with 3,674 rows marked as `PROBABLE_STRUCTURAL_CORRELATION`.
+**Decision:** Created `quest_npc_candidates` table with 3,674 rows.
 
 **Not promoted to `quest_npcs`** because:
 - No explicit client field links quest to NPC
-- No runtime consumer found that resolves NPC identity from quest state
+- No runtime consumer found
 - ID overlap is correlation, not confirmed semantic relationship
+
+**Semantic Quest → NPC evidence:** `UNRESOLVED`
 
 ## Confidence Classification
 
 | Level | Count | Description |
 |---|---|---|
-| BINARY_CONFIRMED | 293 | Names from monsters.edt (same binary source) |
-| PROBABLE_STRUCTURAL_CORRELATION | 3,674 | Quest ↔ NPC ID overlap |
-| UNRESOLVED | 0 | All NPCs with data resolved |
-
-## Database Changes
-
-### npc_identity (table)
-- **Before:** 1,928 rows (all "unknown")
-- **After:** 293 rows (all resolved with names)
-- **Method:** Names from `monsters.edt` (NPCs share ID space with monsters)
-
-### quest_npc_candidates (table)
-- **Before:** did not exist
-- **After:** 3,674 rows
-- **Confidence:** PROBABLE_STRUCTURAL_CORRELATION
-
-### quest_npcs (table)
-- **Before:** 0 rows
-- **After:** 0 rows (unchanged, not promoted from candidates)
+| `CLIENT_FACT` | 1,928 | NPC identity exists (ID from client references) |
+| `PROBABLE` | 293 | NPC name from `monsters.edt` (correlation) |
+| `PROBABLE` | 3,674 | Quest ↔ NPC ID overlap (candidates) |
+| `UNRESOLVED` | 1,635 | NPC names not found |
 
 ## Validation Results
 
@@ -92,24 +91,35 @@ Resolve NPC identity (names) for all NPCs that have dialog or placement data, an
 | MonsterID 1 = Piya | PASS |
 | MonsterID 22 = Rascal Rabbit | PASS |
 | loot_entries = 0 | PASS |
-| DropRate = DEFERRED | PASS |
+| DropRate = `DEFERRED` | PASS |
 | npc_dialog unchanged (793) | PASS |
 | npc_locations unchanged (1,300) | PASS |
 | monster_progression unchanged (5,161) | PASS |
 | equipment_progression unchanged (125) | PASS |
 | player_progression_v2 unchanged (8) | PASS |
-| walkthrough_steps unchanged (7) | PASS |
 | map_candidates unchanged (40) | PASS |
 | map_graph unchanged (1,247) | PASS |
 
 ## Remaining Gaps
 
-| Area | Status |
+| Area | Evidence |
 |---|---|
-| Quest → NPC semantic relationship | UNRESOLVED (correlation only) |
-| Quest chain | UNRESOLVED |
-| Quest → Monster | UNRESOLVED |
-| NPC names for NPCs without dialog/placement | UNRESOLVED (no data) |
-| Skill binary | UNRESOLVED/PARTIAL |
-| Actual drop source | UNRESOLVED |
-| DropRate | DEFERRED |
+| Quest → NPC semantic | `UNRESOLVED` (correlation only) |
+| Quest chain | `UNRESOLVED` |
+| Quest → Monster | `UNRESOLVED` |
+| 1,635 NPC names | `UNRESOLVED` (no data in client) |
+| Skill binary | `UNRESOLVED` |
+| Actual drop source | `UNRESOLVED` |
+| DropRate | `DEFERRED` |
+
+## Evidence Legend
+
+| Label | Meaning |
+|---|---|
+| `BINARY_CONFIRMED` | Langsung dari client binary |
+| `CLIENT_FACT` | Dari client, parsed facts |
+| `DERIVED` | Dihitung dari data lain |
+| `PROBABLE` | Correlation, no consumer runtime |
+| `EXTERNAL_REFERENCE` | Wiki/community/game knowledge |
+| `UNRESOLVED` | Tidak ada evidence |
+| `DEFERRED` | Tidak dikerjakan |
