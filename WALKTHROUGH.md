@@ -150,7 +150,7 @@ Lanjut ke L30+. Band MID — mulai masuk dungeon.
 Dungeon pertama (Crude Dungeon), grinding efisien, equipment upgrade signifikan.
 
 ### Pergi ke
-- **Map 62** — Crude Dungeon (L30–L52, **CANDIDATE** — map yang tergolong efektif untuk L30+)
+- **Map 62** — Crude Dungeon (L30–L52, **CANDIDATE** — berdasarkan monster/map data)
 - **Map 16** — Eastern Laywook Forest (L26–L47, **CANDIDATE**)
 - **Map 4** — Outside Crude Dungeon (L13–L48, **CANDIDATE**)
 - **Map 1** — Land's End (L51–L82, **CANDIDATE**)
