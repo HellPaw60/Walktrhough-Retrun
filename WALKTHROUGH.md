@@ -12,9 +12,9 @@
 Belajar dasar, hunting monster lewat, kumpulin equipment pertama.
 
 ### Pergi ke
-- **Map 10** — Silon Forest (L1–L27, monster lengkap L1-L18)
-- **Map 18** — Upstream of Mimir River (L1–L17)
-- **Map 24** — Trevia Valley (L1–L16)
+- **Map 10** — Silon Forest (L1–L27, **CANDIDATE** — monster lengkap L1-L18 berdasarkan map_spawns)
+- **Map 18** — Upstream of Mimir River (L1–L17, **CANDIDATE**)
+- **Map 24** — Trevia Valley (L1–L16, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -54,9 +54,9 @@ Naik ke L10. Lanjut ke band EARLY.
 Job change pertama (L10, dari gameplay), map baru, quest exp.
 
 ### Pergi ke
-- **Map 12** — Outer Lines of Lime (L1–L36, hunting L10-L18)
-- **Map 17** — Adel Monastery (L6–L26)
-- **Map 9** — Midstream of Mimir River (L25–L39)
+- **Map 12** — Outer Lines of Lime (L1–L36, **CANDIDATE** — hunting L10-L18)
+- **Map 17** — Adel Monastery (L6–L26, **CANDIDATE**)
+- **Map 9** — Midstream of Mimir River (L25–L39, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -87,7 +87,7 @@ Job change pertama (L10, dari gameplay), map baru, quest exp.
 | 16–26 | Aubergine Dagger.G | HELMET |
 
 ### Job
-First job change di L10. Pilihan dari gameplay:
+First job change di L10 (dari gameplay/external knowledge):
 - Warrior (melee DPS)
 - Knight (tank)
 - Magician (caster)
@@ -96,7 +96,7 @@ First job change di L10. Pilihan dari gameplay:
 - Jester (stealth)
 - Craftsman (crafter)
 
-**Evidence:** `EXTERNAL_REFERENCE` — `game_knowledge`, tidak ada job data di client binary.
+**Evidence:** `EXTERNAL_REFERENCE` — `game_knowledge`, tidak ada job change data di client binary. Tidak ada `change_job_id` atau quest binary yang berhasil dipetakan ke nama job.
 
 ### Item Acquisition
 Shop item tersedia tapi banyak unresolved. Cek shop di setiap map untuk item yang dijual NPC.
@@ -112,10 +112,10 @@ Lanjut ke L20+. Band DEVELOPING.
 Equip upgrade, map challenge pertama, perluas hunting ground.
 
 ### Pergi ke
-- **Map 9** — Midstream of Mimir River (L25–L39)
-- **Map 17** — Adel Monastery (L6–L26)
-- **Map 31** — Upstream of Glasis River (L1–L51)
-- **Map 4** — Outside Crude Dungeon (L13–L48)
+- **Map 9** — Midstream of Mimir River (L25–L39, **CANDIDATE**)
+- **Map 17** — Adel Monastery (L6–L26, **CANDIDATE**)
+- **Map 31** — Upstream of Glasis River (L1–L51, **CANDIDATE**)
+- **Map 4** — Outside Crude Dungeon (L13–L48, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -150,11 +150,11 @@ Lanjut ke L30+. Band MID — mulai masuk dungeon.
 Dungeon pertama (Crude Dungeon), grinding efisien, equipment upgrade signifikan.
 
 ### Pergi ke
-- **Map 62** — Crude Dungeon (L30–L52, map efektif L30+)
-- **Map 16** — Eastern Laywook Forest (L26–L47)
-- **Map 4** — Outside Crude Dungeon (L13–L48)
-- **Map 1** — Land's End (L51–L82)
-- **Map 31** — Upstream of Glasis River (L1–L51)
+- **Map 62** — Crude Dungeon (L30–L52, **CANDIDATE** — map yang tergolong efektif untuk L30+)
+- **Map 16** — Eastern Laywook Forest (L26–L47, **CANDIDATE**)
+- **Map 4** — Outside Crude Dungeon (L13–L48, **CANDIDATE**)
+- **Map 1** — Land's End (L51–L82, **CANDIDATE**)
+- **Map 31** — Upstream of Glasis River (L1–L51, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -191,9 +191,9 @@ Lanjut ke L40+. Band PROGRESSION — map menengah-atas.
 High monster, map menengah-atas, equipment yang lebih kuat.
 
 ### Pergi ke
-- **Map 15** — Western Laywook Forest (L35–L47, L65–L81)
-- **Map 16** — Eastern Laywook Forest (L26–L47)
-- **Map 61** — Clement Mine (L51–L109)
+- **Map 15** — Western Laywook Forest (L35–L47, L65–L81, **CANDIDATE**)
+- **Map 16** — Eastern Laywook Forest (L26–L47, **CANDIDATE**)
+- **Map 61** — Clement Mine (L51–L109, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -228,11 +228,11 @@ Lanjut ke L50+. Band LATE — endgame preparation.
 Endgame preparation, rare monster, equipment premium.
 
 ### Pergi ke
-- **Map 62** — Crude Dungeon (L30–L52)
-- **Map 61** — Clement Mine (L51–L109)
-- **Map 33** — Mt. Trevia (L52–L61)
-- **Map 66** — Aleph Silon (L39–L80)
-- **Map 75** — West of Sealed Island (L74–L80)
+- **Map 62** — Crude Dungeon (L30–L52, **CANDIDATE**)
+- **Map 61** — Clement Mine (L51–L109, **CANDIDATE**)
+- **Map 33** — Mt. Trevia (L52–L61, **CANDIDATE**)
+- **Map 66** — Aleph Silon (L39–L80, **CANDIDATE**)
+- **Map 75** — West of Sealed Island (L74–L80, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -248,12 +248,12 @@ Endgame preparation, rare monster, equipment premium.
 ### Equipment
 | Level | Item | Slot |
 |---|---|---|
-| 48–58 | Large Pumpkin's Shield | SHIELD |
+| 48–58 | Large Pumpkin's Shield | CAPE |
 | 55–65 | Sieve | ACCESSORY |
 | 55–65 | Cool Guy's Stick.G | BOOTS |
 | 55–65 | Shooting Star.DG | CAPE |
 | 55–65 | Korean Yut | HELMET |
-| 55–65 | Spiked Bat | ARMOR |
+| 55–65 | Spiked Bat | SHIELD |
 
 ### Next Step
 Lanjut ke L60+. Band ENDGAME — map premium, monster kuat.
@@ -266,12 +266,12 @@ Lanjut ke L60+. Band ENDGAME — map premium, monster kuat.
 Map premium, monster kuat, equipment endgame.
 
 ### Pergi ke
-- **Map 14** — Herakus Forest (L42–L91)
-- **Map 15** — Western Laywook Forest (L65–L81)
-- **Map 61** — Clement Mine (L51–L109)
-- **Map 66** — Aleph Silon (L70–L105)
-- **Map 34** — Lake Cross (L64–L73)
-- **Map 68** — Forest of Death (L153–L174)
+- **Map 14** — Herakus Forest (L42–L91, **CANDIDATE**)
+- **Map 15** — Western Laywook Forest (L65–L81, **CANDIDATE**)
+- **Map 61** — Clement Mine (L51–L109, **CANDIDATE**)
+- **Map 66** — Aleph Silon (L70–L105, **CANDIDATE**)
+- **Map 34** — Lake Cross (L64–L73, **CANDIDATE**)
+- **Map 68** — Forest of Death (L153–L174, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
@@ -299,14 +299,14 @@ Lanjut ke L75+. Band LEGEND — map tertinggi, monster elite.
 Map tertinggi, monster elite, endgame content.
 
 ### Pergi ke
-- **Map 74** — Sealed Cave (L81–L91)
-- **Map 76** — East of Sealed Island (L63–L72)
-- **Map 29** — Downstream of Glasis River (L83–L108)
-- **Map 30** — Glasis Plains (L80–L105)
-- **Map 43** — Mt. Cross (L92–L120)
-- **Map 69** — Catacombs (L120–L190)
-- **Map 98** — Esdelron Lake (L184–L220)
-- **Map 93** — Dungeon of Death (L194–L212)
+- **Map 74** — Sealed Cave (L81–L91, **CANDIDATE**)
+- **Map 76** — East of Sealed Island (L63–L72, **CANDIDATE**)
+- **Map 29** — Downstream of Glasis River (L83–L108, **CANDIDATE**)
+- **Map 30** — Glasis Plains (L80–L105, **CANDIDATE**)
+- **Map 43** — Mt. Cross (L92–L120, **CANDIDATE**)
+- **Map 69** — Catacombs (L120–L190, **CANDIDATE**)
+- **Map 98** — Esdelron Lake (L184–L220, **CANDIDATE**)
+- **Map 93** — Dungeon of Death (L194–L212, **CANDIDATE**)
 
 ### Hunting
 | Level | Monster | Map |
