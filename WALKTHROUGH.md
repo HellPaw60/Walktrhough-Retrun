@@ -573,7 +573,7 @@ Setiap skill memiliki nilai skill point (range 0–54, terbanyak 6 SP). Dua skil
 
 Detail lengkap graph, semua chain, dan evidence classification: `docs/SKILL_TREE_RESEARCH.md`
 
-Player-facing skill build / recommendation belum diintegrasikan.
+Player-facing build/recommendation belum dibuat. Walkthrough saat ini menampilkan dependency/progression structure, bukan rating atau recommended build.
 
 ---
 

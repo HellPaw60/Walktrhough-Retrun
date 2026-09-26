@@ -33,7 +33,8 @@
 
 - **NPC names:** 293 of 1,928 resolved. Names from `monsters.edt` (correlation, no consumer runtime).
 - **Skill descriptions:** RESOLVED — SkillFile v7 fully parsed (7,240 records; 362/file × 20 files; 344 named + 18 unnamed). Semantic mapping substantially decoded via cross-build loader schema, prerequisite chains, buff.edt joins (103/103 + 20/20), element clustering, and projectile behavior. Direct v7 consumer remains unavailable (SO3DPlus.exe packed). See `SKILL_V7_SEMANTIC_RESEARCH.md`.
-- **Skill tree integration:** Skill data available but not yet integrated into walkthrough/player recommendations.
+- **Skill tree integration:** COMPLETE — prerequisite graph + representative chains integrated into WALKTHROUGH.md.
+- **Player skill recommendations:** NOT YET BUILT — requires gameplay evidence beyond dependency structure.
 - **Quest chain:** `quest_node_mapping` uses talk_id equality (PROBABLE, not consumer-tested).
 - **Drop tables:** Wiki used as `EXTERNAL_REFERENCE` only, not client-confirmed.
 - **Map connection:** No teleporter/warp data in binary (`UNRESOLVED`).

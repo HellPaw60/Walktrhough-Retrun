@@ -19,8 +19,8 @@
 - NPC names: `PROBABLE` — 293 resolved, 1,635 unresolved
 - Skills binary dataset: AVAILABLE — 7,240 records (362/file × 20 files; 344 named + 18 unnamed), fixed 38-field layout, chain-verified
 - Skills semantic dataset: AVAILABLE with evidence levels — field[23]/field[27] buff joins `BINARY_CONFIRMED`; prereq/element/projectile/variant mapping `PROBABLE` (cross-build v8 schema). See `SKILL_V7_SEMANTIC_RESEARCH.md`
-- Skill tree: NOT YET INTEGRATED — data exists, progression guide not yet built
-- Player-facing skill recommendations: NOT YET BUILT
+- Skill tree: COMPLETE — prerequisite graph + representative chains integrated into WALKTHROUGH.md
+- Player-facing skill recommendations: NOT YET BUILT — requires gameplay evidence beyond dependency structure
 - Drop tables: `UNRESOLVED`
 - DropRate: `DEFERRED`
 
