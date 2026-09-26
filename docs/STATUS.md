@@ -72,8 +72,9 @@
 | Player skill recommendations | NOT YET BUILT |
 | Direct v7 loader | `UNRESOLVED` (NOT FOUND — SO3DPlus.exe packed) |
 | Exact 10→11 gameplay meaning | `PROBABLE` / UNCONFIRMED |
-| field[30]/field[31] (buff_3/buff_4) | `UNRESOLVED` |
-| field[37] | `UNRESOLVED` |
+| field[30] | `BINARY_CONFIRMED` — buff_3_id (3/3 buff.edt join) |
+| field[31] | `BINARY_CONFIRMED` — buff_4_id, float-encoded (5/5 join) |
+| field[37] | `BINARY_CONFIRMED` — buff_5_id (2/2 join; v7-specific 5th slot) |
 
 ## Unresolved / Deferred
 
@@ -81,8 +82,8 @@
 |---|---|
 | Quest chain | `UNRESOLVED` |
 | Quest → Monster | `UNRESOLVED` |
-| Drop table | `UNRESOLVED` |
-| DropRate | `DEFERRED` |
+| Drop table | `BINARY_CONFIRMED` — RESOLVED: `minimap/drop_1/2/3.edt` (see `GAP_RESOLUTION_RESEARCH.md`) |
+| DropRate | `BINARY_CONFIRMED` values in drop files; roll semantics `PROBABLE` |
 | Map connection | `UNRESOLVED` |
 | Quest objective | `UNRESOLVED` |
 | 1,635 NPC names | `UNRESOLVED` |

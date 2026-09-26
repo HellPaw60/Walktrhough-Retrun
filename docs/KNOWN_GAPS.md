@@ -4,15 +4,12 @@
 
 | Area | Evidence | Reason |
 |---|---|---|
-| Quest chain | `UNRESOLVED` | No flag transition consumer found |
-| Quest → Monster | `UNRESOLVED` | No exact reference in binary |
-| 1,635 NPC names | `UNRESOLVED` | Not found in `monsters.edt` or client string table |
-| Exact 10→11 skill-tier gameplay meaning | `PROBABLE` | Reset-and-spike pattern established; no runtime confirmation |
-| field[30]/field[31] (buff_3/buff_4) | `UNRESOLVED` | Not yet sampled against buff.edt |
-| field[37] | `UNRESOLVED` | 360/362 zero; exceptions 350, 150 unexplained |
-| Direct v7 skill loader | `UNRESOLVED` | SO3DPlus.exe packed; static analysis impossible |
-| Actual drop source | `UNRESOLVED` | `drop.py` schema exists, `drop*.scr` file not found in client |
-| DropRate | `DEFERRED` | Not investigated per project scope |
+| Quest chain | `UNRESOLVED` | No flag transition consumer found; script.dat/scripts.dat (4.7MB) not yet decodable — format unknown |
+| Quest → Monster | `UNRESOLVED` | No exact reference in binary; action_id (10,845 unique) has no definition table |
+| 1,635 NPC names | `UNRESOLVED` (client) | Client sources exhausted (npctalk = dialog only, no name table); wiki names available as `EXTERNAL_REFERENCE` for all 1,635 |
+| Exact 10→11 skill-tier gameplay meaning | `PROBABLE` | Reset-and-spike + tab structure (skilltree.men) strengthen; no runtime confirmation |
+| Direct v7 skill loader | `UNRESOLVED` | SO3DPlus.exe packed (`.text` virtual-only, entropy 8.00, no RTTI); sealres.dll only references skill.edt (v4) |
+| DropRate roll semantics | `PROBABLE` | Rate values `BINARY_CONFIRMED` in drop_1/2/3.edt; per-million cumulative interpretation not runtime-confirmed |
 
 ## Resolved (Not Gaps)
 
@@ -27,6 +24,11 @@
 | Skill binary structure | `BINARY_CONFIRMED` | 362 records/file × 20 files; fixed 38-field layout; chain parse exact EOF 20/20 |
 | Skill semantic mapping | `BINARY_CONFIRMED` / `PROBABLE` | field[23]→buff.edt 103/103, field[27]→buff.edt 20/20 (`BINARY_CONFIRMED`); prereq chains, element, projectile, variant axis via cross-build v8 schema (`PROBABLE`) — see `SKILL_V7_SEMANTIC_RESEARCH.md` |
 | Skill variant axis | `PROBABLE` | skill01–20 = level/rank variants; files 11–20 = second tier (reset+spike); uskill01–20 = extended family |
+| Actual drop source | `BINARY_CONFIRMED` | `minimap/drop_1.edt` (4,006 rows) + drop_2/3 — pipe-delimited (item_id, cumulative_rate); monster field13 → row N; Piya→Piya's Egg verified 7/7 vs wiki |
+| field[30] buff_3_id | `BINARY_CONFIRMED` | 3/3 nonzero join buff.edt (Shatter Armor/Time Bomb→급습, Blade Waltz→제압1) |
+| field[31] buff_4_id | `BINARY_CONFIRMED` | 5/5 float-decoded join buff.edt (296, 951, 1038, 1258) |
+| field[37] buff_5_id | `BINARY_CONFIRMED` | 2/2 join buff.edt (Throw Shield→쾌검, Disintegrate→토네이도1) |
+| field[0] job tree structure | `CLIENT_FACT` | skilltree.men UI memuat job_001–job_231 persis nilai field[0]; tab structure N/N+10/N+20; 2ndjobLock element |
 
 ## Not Yet Built
 

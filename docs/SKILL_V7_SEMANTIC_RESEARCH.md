@@ -91,12 +91,12 @@ transfer carry `PROBABLE`.
 | field[27] | `buff_2_id` | 20 nonzero values | **20/20 resolve into buff.edt** — Demolition→충격여파(296), Charge→데미지두번(976), Damnation→도트+이동불가(1263/1257) | **`BINARY_CONFIRMED`** (20/20) |
 | field[28] | `buff_2_duration_seconds` (F32) | — | Pairs with f27 | `PROBABLE` |
 | field[29] | `buff_2_chance` (F32) | — | Pairs with f27 | `PROBABLE` |
-| field[30] | `buff_3_id` | — | Not sampled | `UNRESOLVED` |
-| field[31] | `buff_4_id` (float-encoded) | — | Not sampled | `UNRESOLVED` |
+| field[30] | `buff_3_id` | 3 nonzero | **3/3 join buff.edt** (Shatter Armor/Time Bomb→218 급습, Blade Waltz→167 제압1) | **`BINARY_CONFIRMED`** |
+| field[31] | `buff_4_id` (float-encoded) | 5 nonzero | **5/5 float-decoded join buff.edt** (296 충격여파×2, 951 이동불가, 1038 포츈쿠키-스턴, 1258 트리플애로우-독) | **`BINARY_CONFIRMED`** |
 | field[34] | `icon_id` | 0–355, 345 unique; drifts from skill_id (-4/-5/-7 steps) | **Reload(254) & Reload(322) share f34=250** — different skills, same icon; Combo Master ×3 (different jobs) have different f34 | `PROBABLE` (upgraded from "internal index" — icon sharing is icon behavior) |
 | field[35] | `projectile_speed` | 0, 8–15, 1000 | Fireball/Frostbolt=1000 (ranged magic ✓), melee/buff=0 | `PROBABLE` (strong) |
 | field[36] | `reserved` | 0 in 362/362 | Constant zero | `BINARY_CONFIRMED` (constant) |
-| field[37] | (v8: beyond map edge) | 0 in 360/362; 350, 150 | Two exceptions; v8 map ends at 34 + 35, so 36–37 may be v7-specific | `UNRESOLVED` |
+| field[37] | buff_5_id (v7-specific) | 0 in 360/362; 350, 150 | **2/2 join buff.edt** (Throw Shield→350 쾌검, Disintegrate→150 토네이도1); both skills have no f23/f27 — f37 is their only buff link | **`BINARY_CONFIRMED`** |
 
 ### Fields verified in detail
 
