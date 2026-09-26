@@ -10,7 +10,9 @@
 **Conclusion: Hypothesis A is supported — `PROBABLE`** — `skill01.edt` through
 `skill20.edt` represent **skill level/rank variants 1–20** of the same skill
 dataset. Each file contains the same 362 records (344 named skills + 18 unnamed
-placeholders) with identical names and descriptions; numeric fields progress
+placeholders); names are identical across files and descriptions are identical
+**except Reload (ID 322)**, whose percentage changes `4% → 8% → 12% → 16% → 20%`
+(plateau at 20% from file 05 onward); numeric fields progress
 systematically with file index (power values rise through file 10, then plateau
 at a mastery tier). No loader/consumer was found, so this remains `PROBABLE`.
 
@@ -46,8 +48,8 @@ at a mastery tier). No loader/consumer was found, so this remains `PROBABLE`.
 | Aspect | Finding |
 |---|---|
 | Names | Identical across all 20 files (fixed 32-byte field) |
-| Descriptions | Identical across files; variant info lives in numerics only |
-| Exception | Skill 322 `Reload`: percentage in description changes (4% → 8% → … → 20% plateau) |
+| Descriptions | Identical across files **except Reload (ID 322)** — the only textual variant in the dataset: `4% → 8% → 12% → 16% → 20%` chance to reset headshot cooldown, plateauing at 20% from file 05 onward. All other 361 records have byte-identical descriptions in all 20 files |
+| Variant info | Lives in numeric fields; Reload is the sole exception where it also appears in text |
 
 ---
 
@@ -108,7 +110,7 @@ Identical across all 20 files — utility skill, one of 21 constant named record
 | A: skill01–20 = skill levels/ranks | **`PROBABLE`** | 330/362 records change; power rises then plateaus; text identical; 20-step progression |
 | B: Server config tiers | Weak | Smooth per-skill progression fits level scaling |
 | C: Client/platform variants | Rejected | No platform differences |
-| D: Language variants | Rejected | All text identical |
+| D: Language variants | Rejected | All text identical (Reload ID 322 percentage is a level progression, not localization) |
 | E: Unrelated duplicates | Rejected | Systematic progression |
 
 ---

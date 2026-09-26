@@ -148,6 +148,11 @@ With the v9 fixed-layout model, **all 362 records parse as exactly 38 fields**
 **Fireball (ID 18):** field[18] power 75 → 135 → 240 (files 01→10), jump to 410
 at file 11, plateau to file 20. field[9]: 15 → 24.
 
+**Textual variant exception:** Reload (ID 322) is the only record whose
+description differs across files (4% → 8% → 12% → 16% → 20% headshot-cooldown
+reset chance, plateau at 20% from file 05). All other 361 records have
+byte-identical descriptions in all 20 files.
+
 Conclusion unchanged: **skill01–skill20 = skill level/rank variants — `PROBABLE`**
 (330/362 records change; systematic progression + plateau; no loader found).
 

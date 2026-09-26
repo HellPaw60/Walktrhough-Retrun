@@ -105,6 +105,11 @@ Correct denominator is **362** — every record has every field.
 - CSV: `D:\SealR_Database\skill_v7_parsed.csv` (7,240 rows, 44 columns, 1,796,615 bytes)
 - Pickle: `D:\SealR_Database\skill_v9_data.pkl`
 
+Description-content verification (v9 data): descriptions are byte-identical
+across all 20 files for 361/362 records. The sole exception is **Reload
+(ID 322)** — 5 unique descriptions across files (4% → 8% → 12% → 16% → 20%
+headshot-cooldown reset chance, plateau at 20% from file 05).
+
 ---
 
 ## 7. Validation
