@@ -18,6 +18,8 @@
 
 | Area | Evidence | Detail |
 |---|---|---|
+| Skill tree integration | COMPLETE | Prerequisite graph (362 nodes, 284 edges, 0 cycles) built and integrated into WALKTHROUGH.md as player-facing skill paths |
+| Player skill recommendations | NOT YET BUILT | Chain structure available; build/rating recommendations require gameplay evidence |
 | Quest → NPC | `PROBABLE` | 3,674 candidates evaluated; 1,235 valid rows after removing false positives (NPC 2/3 = monsters); 94 NPC IDs with textual evidence (names in quest dialog); 10 NPC IDs with multi-layer corroboration (text + dialog + location); no runtime consumer found |
 | NPC identities | `CLIENT_FACT` | 1,928 IDs from `npc_locations`, `npc_dialog`, `quest_dialog_nodes` |
 | NPC placements | `CLIENT_FACT` | 1,300 placements from `map/npc*.edt` |

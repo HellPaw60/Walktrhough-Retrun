@@ -72,8 +72,9 @@
 | DropRate | `DEFERRED` |
 | Skill binary structure | COMPLETE |
 | Skill semantic mapping | SUBSTANTIALLY DECODED |
+| Skill tree integration | COMPLETE |
+| Player skill recommendations | NOT YET BUILT |
 | Direct v7 loader | `UNRESOLVED` (NOT FOUND — SO3DPlus.exe packed) |
-| Skill tree integration | NOT YET DONE |
 | Exact 10→11 gameplay meaning | `PROBABLE` / UNCONFIRMED |
 | field[30]/field[31] (buff_3/buff_4) | `UNRESOLVED` |
 | field[37] | `UNRESOLVED` |

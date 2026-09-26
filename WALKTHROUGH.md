@@ -363,6 +363,216 @@ Status (dengan evidence level):
 
 Detail lengkap: `docs/SKILL_V7_SEMANTIC_RESEARCH.md`
 
+---
+
+## Skill Progression
+
+Data client menunjukkan skill saling terhubung melalui prerequisite: sebagian besar skill hanya bisa dipelajari setelah skill tertentu mencapai level tertentu. Struktur ini membentuk skill tree per class/job.
+
+### Cara Membaca
+
+Setiap chain dibaca dari atas (skill pembuka) ke bawah. Angka di samping panah adalah level prerequisite-nya — skill di bawah baru terbuka setelah skill di atasnya mencapai level tersebut.
+
+Contoh (Mage):
+
+```
+Source of Universe Lv5
+→ Fireball Lv1
+→ Firestorm Lv1
+→ Hell Burn Lv5
+→ Meteor
+```
+
+Artinya: Fireball membutuhkan Source of Universe Lv5. Firestorm membutuhkan Fireball Lv1. Hell Burn membutuhkan Firestorm Lv5. Meteor membutuhkan Hell Burn Lv10.
+
+Interpretasi prerequisite berstatus `PROBABLE` (semantic mapping dari cross-build schema); struktur graph-nya sendiri adalah hasil pembacaan data client secara langsung.
+
+### Prerequisite Bersama
+
+Beberapa branch class menggunakan **Sleep** dan **Martial Combo** sebagai prerequisite bersama sebelum masuk ke branch skill masing-masing. Hampir seluruh job tree bermula dari kedua skill ini — Sleep memiliki 16 skill turunan langsung, Martial Combo 13. Setelah itu, setiap branch berjalan di dalam category-nya sendiri.
+
+### Skill Path per Class
+
+Chain berikut berasal langsung dari prerequisite graph (satu chain representative per class; chain tambahan hanya untuk branch yang berbeda secara material):
+
+**Warrior**
+```
+Sleep
+→ Martial Combo Lv1
+→ Great Sword Combo Lv5
+→ Concentration Lv3
+→ Quick Slash Lv3
+→ Double Slash Lv3
+→ Deadly Slash Lv10
+```
+
+**Knight**
+```
+Sleep
+→ Martial Combo Lv1
+→ Sword Combo Lv5
+→ Chivalry Lv3
+→ Holy Cross Lv3
+→ Grand Cross Lv3
+→ Holy Punishment Lv5
+→ Deadly Cross Lv10
+```
+
+**Jester**
+```
+Sleep
+→ Martial Combo Lv1
+→ Knife Combo Lv5
+→ Passion Lv5
+→ Single Jumping Dagger Lv3
+→ Dual Jumping Dagger Lv10
+```
+
+**Mage — cabang fire**
+```
+Sleep
+→ Martial Combo Lv1
+→ Source of Universe Lv5
+→ Fireball Lv1
+→ Firestorm Lv1
+→ Hell Burn Lv5
+→ Meteor Lv10
+```
+
+**Mage — cabang ice**
+```
+Sleep
+→ Martial Combo Lv1
+→ Source of Universe Lv5
+→ Frostbolt Lv1
+→ Ice Drill Lv1
+→ Ice Dew Lv5
+→ Blizzard Lv10
+```
+
+**Priest — jalur healing**
+```
+Sleep
+→ Martial Combo Lv1
+→ Prayer Lv5
+→ Self Cure Lv1
+→ Cure Lv5
+→ Mass Cure Lv5
+→ Cleansing Lv5
+→ Revival Lv5
+```
+
+**Craftsman — jalur tempur**
+```
+Sleep
+→ Martial Combo Lv1
+→ Blacksmiths Ingenuity Lv5
+→ Deadly Blow Lv1
+→ Deadly Smash Lv5
+→ Demolition Lv5
+```
+
+**Craftsman — jalur produksi**
+```
+Sleep
+→ Martial Combo Lv1
+→ Blacksmiths Ingenuity Lv5
+→ Weaponry Lv1
+→ Refine Weapon Lv5
+```
+
+Skill produksi (Weaponry, Armory, Accessory Production, dan refine-nya) memiliki maximum level 20 — tertinggi di dataset.
+
+**Hunter**
+```
+Sleep
+→ Martial Combo Lv1
+→ Slingshot Combo Lv1
+→ Training Lv5
+→ Simple Shot Lv5
+→ Point Shot Lv5
+→ Power Shot Lv5
+→ Eye Sight Lv5
+→ Sharp Eye Lv5
+```
+
+Chain Hunter merupakan salah satu chain terdalam di game (depth 9).
+
+**Archer**
+```
+Piercing Arrow
+→ Bump Arrow Lv3
+→ Broken Arrow Lv3
+→ Enhance Bow Lv3
+→ Triple Arrow Lv1
+```
+
+**Gunner**
+```
+Aimed Shot
+→ Kill Shot Lv3
+→ Encounter Shot Lv3
+→ Reload Lv3
+```
+
+Cabang lain: Aimed Shot → Kill Shot Lv3 → Headshot Lv3 → Enhance Gun Lv3.
+
+**Chef**
+```
+Sleep
+→ Martial Combo Lv1
+→ Poke Combo Lv3
+→ Table Manner Lv3
+→ Absolute Taste Lv3
+→ Appetizer Soup Lv1
+→ Korean Dish - Spicy Taste Lv5
+→ Japanese Dish - Wasabi Onigiri Lv5
+→ Chinese Dish - Fire Taste Lv3
+```
+
+Chain Chef juga mencapai depth 9. Cabang lain (Great Delicacies: Foie Gras → Caviar → Truffle) berpisah dari Appetizer Soup.
+
+Sebagian category skill (7–8, 11–16, 21–26) belum memiliki nama class yang terkonfirmasi — chain-nya tersedia di `docs/SKILL_TREE_RESEARCH.md` tanpa penamaan job.
+
+### Level Requirement Skill
+
+Minimum character level untuk mempelajari skill bisa berubah antar variant file. Data menunjukkan tiga pola:
+
+- **Tetap** — requirement tidak berubah (contoh: Fireball selalu Lv10)
+- **Naik lalu berhenti** — requirement naik dari file 01–10 lalu plateau
+- **Naik lalu reset lebih rendah** — requirement naik di file 01–10, lalu turun kembali di file 11–20
+
+Contoh pola reset (data client):
+
+```
+Quick Slash:  11 → 14 → 17 → ... → 38  (file 01–10)
+              kembali ke 10             (file 11–20)
+
+Double Slash: 25 → 28 → 31 → ... → 50  (file 01–10)
+              kembali ke 23             (file 11–20)
+```
+
+Struktur ini mengindikasikan adanya **second progression track** pada file 11–20 — interpretasi ini masih `PROBABLE`; makna gameplay persisnya belum dikonfirmasi.
+
+### Maximum Skill Level
+
+Skill memiliki maximum level yang berbeda:
+
+| Max Level | Jumlah Skill |
+|---:|---:|
+| 1 | 62 |
+| 5 | 200 |
+| 10 | 83 |
+| 20 | 8 |
+
+Mayoritas skill bermaks level 5 atau 10. Hanya skill produksi Craftsman (dan satu record tanpa nama) yang mencapai 20. Data ini berasal dari client; korelasi dengan file `uskill01–20.edt` masih `PROBABLE` dan belum dikonfirmasi sebagai runtime source.
+
+### Skill Point
+
+Setiap skill memiliki nilai skill point (range 0–54, terbanyak 6 SP). Dua skill — Throw Bomb dan Alchemy — membawa nilai khusus 9999 yang kemungkinan merupakan konfigurasi khusus, bukan nilai normal. Mekanisme spending SP (per level atau per purchase) belum terkonfirmasi.
+
+Detail lengkap graph, semua chain, dan evidence classification: `docs/SKILL_TREE_RESEARCH.md`
+
 Player-facing skill build / recommendation belum diintegrasikan.
 
 ---
@@ -380,7 +590,8 @@ Player-facing skill build / recommendation belum diintegrasikan.
 | Quest objective | `UNRESOLVED` | action_id semantics partial |
 | Skill binary structure | COMPLETE | 362 records/file × 20 files; fixed 38-field layout; chain parse exact EOF 20/20 |
 | Skill semantic mapping | SUBSTANTIALLY DECODED | buff.edt joins 103/103 + 20/20 `BINARY_CONFIRMED`; prereq/element/projectile/variant `PROBABLE` (cross-build v8 schema; direct v7 loader NOT FOUND) |
-| Skill tree walkthrough integration | NOT YET DONE | Data available; player recommendations not yet built |
+| Skill tree integration | COMPLETE | Prerequisite graph built (362 nodes, 284 edges, 0 cycles); representative chains integrated into WALKTHROUGH.md |
+| Player skill recommendations | NOT YET BUILT | Chain structure available in walkthrough; build/rating recommendations require gameplay evidence |
 | 1,635 NPC names | `UNRESOLVED` | Tidak ditemukan di `monsters.edt` atau string table |
 
 ---

@@ -4,8 +4,8 @@
 
 | Area | Evidence | Reason |
 |---|---|---|
-| Skill tree integration | NOT YET DONE | Binary + semantic skill data available; not yet built into progression guide |
-| Player-facing skill recommendations | NOT YET BUILT | Requires skill-tree analysis first |
+| Skill tree integration | COMPLETE | Prerequisite graph + representative chains integrated into WALKTHROUGH.md |
+| Player-facing skill recommendations | NOT YET BUILT | Requires gameplay evidence beyond dependency structure |
 | Quest→Monster | `UNRESOLVED` | No exact reference in quest.edt binary |
 | Quest chain | `UNRESOLVED` | Flag transition consumer not found |
 | Map connections | `UNRESOLVED` | 1,247 edges need validation, no warp data |
