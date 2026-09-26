@@ -9,8 +9,8 @@
 
 **Conclusion: Hypothesis A is supported — `PROBABLE`** — `skill01.edt` through
 `skill20.edt` represent **skill level/rank variants 1–20** of the same skill
-dataset. Each file contains the same 362 records (344 named skills + 18 unnamed
-placeholders); names are identical across files and descriptions are identical
+dataset. Each file contains the same 362 records (344 named records + 18 unnamed
+records); names are identical across files and descriptions are identical
 **except Reload (ID 322)**, whose percentage changes `4% → 8% → 12% → 16% → 20%`
 (plateau at 20% from file 05 onward); numeric fields progress
 systematically with file index (power values rise through file 10, then plateau

@@ -17,7 +17,7 @@
 | **Records per file** | **362** | Chain parse reaches exact EOF in all 20 files |
 | **Total records** | **7,240** (362 × 20) | — |
 | Named skills | 344 | Non-empty 32-byte name field |
-| Unnamed records | 18 | Empty name field (placeholders/custom) |
+| Unnamed records | 18 | Empty name field (see §3 for per-record classification) |
 | Absent IDs | 1 (ID 363) | Header value itself; records run 1–362 |
 | Unique skill names (named) | 337 | 6 duplicate name groups |
 

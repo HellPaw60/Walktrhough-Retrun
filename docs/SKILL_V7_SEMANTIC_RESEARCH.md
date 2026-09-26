@@ -17,7 +17,9 @@ different build of the same client family (ImageBase `0x400000`, memory dump
 The v8 schema (40 stats) maps onto v7 (38 fields) with indices 0–37 aligned;
 v7 lacks v8's trailing stats 38–39 (`ultimate_move_pct`, `stat_39`).
 
-**Verification result: every testable prediction of the v8 mapping holds on v7 data.**
+**Verification result: the testable portions of the v8 loader-traced schema are
+strongly corroborated by v7 data, including cross-table joins, prerequisite
+chains, element clustering, projectile behavior, and variant progression.**
 
 - Skill prerequisite chains are semantically valid (Fireball ← Source of Universe, Firestorm ← Fireball, Mega Fireball ← Fireball@Lv5)
 - Element codes cluster perfectly by skill family (fire=1, ice=2)
@@ -48,9 +50,13 @@ v4 file) in `sealres.dll` @ `0xda64`.
 
 The unsealed schema was not guessed from data — it was **read out of the loader's
 own field-by-field cursor walk** (documented at `sub_c392e0`, with `movss` float
-reads confirming float columns). Our v7 files are one version earlier of the same
-format family. Every semantically testable field (job, prereq, element, buff
-links, projectile, max level, support subtype) validates against v7 data below.
+reads confirming float columns) on a **different v8 build**. Our v7 files are one
+version earlier of the same format family. The semantically testable fields (job,
+prereq, element, buff links, projectile, max level, support subtype) are all
+corroborated by v7 data below. Note the provenance distinction: this is
+**cross-build evidence** — fields with direct v7 binary proof (field[23]/field[27]
+joins into `buff.edt`) carry `BINARY_CONFIRMED`; fields resting on the v8 schema
+transfer carry `PROBABLE`.
 
 ---
 
