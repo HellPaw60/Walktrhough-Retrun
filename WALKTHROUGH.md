@@ -348,6 +348,25 @@ NPC placement ≠ quest giver. Hubungan Quest → NPC semantic belum terbukti (`
 
 ---
 
+## Skill System
+
+SkillFile v7 berhasil diparse dan dipetakan secara semantic.
+
+Status:
+- 362 skill records per variant file (344 named + 18 unnamed)
+- 20 variant files = skill level/rank progression (`PROBABLE`)
+- prerequisite relationships available (field[2]/field[3])
+- max level available (field[4])
+- minimum level requirements available (field[6])
+- skill point values available (field[5])
+- buff links available (field[23]/field[27] → buff.edt, `BINARY_CONFIRMED`)
+
+Detail lengkap: `docs/SKILL_V7_SEMANTIC_RESEARCH.md`
+
+Player-facing skill build / recommendation belum diintegrasikan.
+
+---
+
 ## Unresolved / Deferred
 
 | Area | Status | Reason |
@@ -357,9 +376,11 @@ NPC placement ≠ quest giver. Hubungan Quest → NPC semantic belum terbukti (`
 | Quest → Monster | `UNRESOLVED` | No exact reference in quest.edt binary |
 | Drop table | `UNRESOLVED` | `drop.py` schema exists, no actual file in client |
 | DropRate | `DEFERRED` | Not investigated |
-| Skill semantics | `UNRESOLVED` | 14,402 skill records parsed, effect mapping unknown |
 | Map connection | `UNRESOLVED` | No teleporter/warp data in binary |
 | Quest objective | `UNRESOLVED` | action_id semantics partial |
+| Skill binary structure | COMPLETE | 362 records/file × 20 files; fixed 38-field layout; chain parse exact EOF 20/20 |
+| Skill semantic mapping | SUBSTANTIALLY DECODED | buff.edt joins 103/103 + 20/20 `BINARY_CONFIRMED`; prereq/element/projectile/variant `PROBABLE` (cross-build v8 schema; direct v7 loader NOT FOUND) |
+| Skill tree walkthrough integration | NOT YET DONE | Data available; player recommendations not yet built |
 | 1,635 NPC names | `UNRESOLVED` | Tidak ditemukan di `monsters.edt` atau string table |
 
 ---

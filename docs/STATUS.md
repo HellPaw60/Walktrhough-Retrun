@@ -12,6 +12,8 @@
 | B2 — Repair | COMPLETE |
 | C2 — Validation | COMPLETE |
 | D — GitHub Sync | COMPLETE |
+| Skill v7 binary parsing | COMPLETE |
+| Skill v7 semantic research | COMPLETE |
 
 ## Walkthrough Coverage
 
@@ -43,7 +45,11 @@
 | map_progression_candidates | 40 | `DERIVED` |
 | map_progression_graph | 1,247 | `DERIVED` |
 | equipment_progression | 125 | `BINARY_CONFIRMED` |
-| skills | 0 | `UNRESOLVED` |
+| skill_records | 7,240 | `BINARY_CONFIRMED` |
+| skill_named_records | 344 | `BINARY_CONFIRMED` |
+| skill_unnamed_records | 18 | `BINARY_CONFIRMED` |
+| skill_ids | 1–362 | `BINARY_CONFIRMED` |
+| skill_header_max_id | 363 | `BINARY_CONFIRMED` |
 
 ## Key Facts
 
@@ -64,7 +70,13 @@
 | Quest → Monster | `UNRESOLVED` |
 | Drop table | `UNRESOLVED` |
 | DropRate | `DEFERRED` |
-| Skill semantics | `UNRESOLVED` |
+| Skill binary structure | COMPLETE |
+| Skill semantic mapping | SUBSTANTIALLY DECODED |
+| Direct v7 loader | `UNRESOLVED` (NOT FOUND — SO3DPlus.exe packed) |
+| Skill tree integration | NOT YET DONE |
+| Exact 10→11 gameplay meaning | `PROBABLE` / UNCONFIRMED |
+| field[30]/field[31] (buff_3/buff_4) | `UNRESOLVED` |
+| field[37] | `UNRESOLVED` |
 | Map connection | `UNRESOLVED` |
 | Quest objective | `UNRESOLVED` |
 | 1,635 NPC names | `UNRESOLVED` |
