@@ -1,11 +1,21 @@
 # Player Progression Gaps
 
+## COMPLETE
+
+| Area | Detail |
+|---|---|
+| Skill tree integration | Prerequisite graph + representative chains integrated into WALKTHROUGH.md |
+
+## NOT YET BUILT
+
+| Area | Reason |
+|---|---|
+| Player-facing skill recommendations | Requires gameplay evidence beyond dependency structure |
+
 ## UNRESOLVED
 
 | Area | Evidence | Reason |
 |---|---|---|
-| Skill tree integration | COMPLETE | Prerequisite graph + representative chains integrated into WALKTHROUGH.md |
-| Player-facing skill recommendations | NOT YET BUILT | Requires gameplay evidence beyond dependency structure |
 | Quest→Monster | `UNRESOLVED` | No exact reference in quest.edt binary |
 | Quest chain | `UNRESOLVED` | Flag transition consumer not found |
 | Map connections | `UNRESOLVED` | 1,247 edges need validation, no warp data |
@@ -19,8 +29,6 @@
 - NPC names: `PROBABLE` — 293 resolved, 1,635 unresolved
 - Skills binary dataset: AVAILABLE — 7,240 records (362/file × 20 files; 344 named + 18 unnamed), fixed 38-field layout, chain-verified
 - Skills semantic dataset: AVAILABLE with evidence levels — field[23]/field[27] buff joins `BINARY_CONFIRMED`; prereq/element/projectile/variant mapping `PROBABLE` (cross-build v8 schema). See `SKILL_V7_SEMANTIC_RESEARCH.md`
-- Skill tree: COMPLETE — prerequisite graph + representative chains integrated into WALKTHROUGH.md
-- Player-facing skill recommendations: NOT YET BUILT — requires gameplay evidence beyond dependency structure
 - Drop tables: `UNRESOLVED`
 - DropRate: `DEFERRED`
 

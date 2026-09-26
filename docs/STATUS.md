@@ -62,14 +62,10 @@
 | NPC Duran | ID 5288 | `PROBABLE` |
 | NPC Hanaiel | ID 5690 | `PROBABLE` |
 
-## Unresolved / Deferred
+## Skill Status
 
 | Area | Status |
 |---|---|
-| Quest chain | `UNRESOLVED` |
-| Quest → Monster | `UNRESOLVED` |
-| Drop table | `UNRESOLVED` |
-| DropRate | `DEFERRED` |
 | Skill binary structure | COMPLETE |
 | Skill semantic mapping | SUBSTANTIALLY DECODED |
 | Skill tree integration | COMPLETE |
@@ -78,6 +74,15 @@
 | Exact 10→11 gameplay meaning | `PROBABLE` / UNCONFIRMED |
 | field[30]/field[31] (buff_3/buff_4) | `UNRESOLVED` |
 | field[37] | `UNRESOLVED` |
+
+## Unresolved / Deferred
+
+| Area | Status |
+|---|---|
+| Quest chain | `UNRESOLVED` |
+| Quest → Monster | `UNRESOLVED` |
+| Drop table | `UNRESOLVED` |
+| DropRate | `DEFERRED` |
 | Map connection | `UNRESOLVED` |
 | Quest objective | `UNRESOLVED` |
 | 1,635 NPC names | `UNRESOLVED` |

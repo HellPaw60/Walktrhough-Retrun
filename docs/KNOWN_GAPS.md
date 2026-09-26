@@ -19,7 +19,6 @@
 | Area | Evidence | Detail |
 |---|---|---|
 | Skill tree integration | COMPLETE | Prerequisite graph (362 nodes, 284 edges, 0 cycles) built and integrated into WALKTHROUGH.md as player-facing skill paths |
-| Player skill recommendations | NOT YET BUILT | Chain structure available; build/rating recommendations require gameplay evidence |
 | Quest → NPC | `PROBABLE` | 3,674 candidates evaluated; 1,235 valid rows after removing false positives (NPC 2/3 = monsters); 94 NPC IDs with textual evidence (names in quest dialog); 10 NPC IDs with multi-layer corroboration (text + dialog + location); no runtime consumer found |
 | NPC identities | `CLIENT_FACT` | 1,928 IDs from `npc_locations`, `npc_dialog`, `quest_dialog_nodes` |
 | NPC placements | `CLIENT_FACT` | 1,300 placements from `map/npc*.edt` |
@@ -29,12 +28,16 @@
 | Skill semantic mapping | `BINARY_CONFIRMED` / `PROBABLE` | field[23]→buff.edt 103/103, field[27]→buff.edt 20/20 (`BINARY_CONFIRMED`); prereq chains, element, projectile, variant axis via cross-build v8 schema (`PROBABLE`) — see `SKILL_V7_SEMANTIC_RESEARCH.md` |
 | Skill variant axis | `PROBABLE` | skill01–20 = level/rank variants; files 11–20 = second tier (reset+spike); uskill01–20 = extended family |
 
+## Not Yet Built
+
+| Area | Reason |
+|---|---|
+| Player skill recommendations | Chain structure available; build/rating recommendations require gameplay evidence beyond dependency structure |
+
 ## Known Limitations
 
 - **NPC names:** 293 of 1,928 resolved. Names from `monsters.edt` (correlation, no consumer runtime).
 - **Skill descriptions:** RESOLVED — SkillFile v7 fully parsed (7,240 records; 362/file × 20 files; 344 named + 18 unnamed). Semantic mapping substantially decoded via cross-build loader schema, prerequisite chains, buff.edt joins (103/103 + 20/20), element clustering, and projectile behavior. Direct v7 consumer remains unavailable (SO3DPlus.exe packed). See `SKILL_V7_SEMANTIC_RESEARCH.md`.
-- **Skill tree integration:** COMPLETE — prerequisite graph + representative chains integrated into WALKTHROUGH.md.
-- **Player skill recommendations:** NOT YET BUILT — requires gameplay evidence beyond dependency structure.
 - **Quest chain:** `quest_node_mapping` uses talk_id equality (PROBABLE, not consumer-tested).
 - **Drop tables:** Wiki used as `EXTERNAL_REFERENCE` only, not client-confirmed.
 - **Map connection:** No teleporter/warp data in binary (`UNRESOLVED`).
