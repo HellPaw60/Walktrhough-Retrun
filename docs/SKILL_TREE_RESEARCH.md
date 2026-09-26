@@ -1,371 +1,834 @@
 # Skill Tree Research
 
-**Date:** 2026-09-26
-**Baseline:** parser v9 (362 records/file, 38 fixed fields), semantic research commit `cf2552b`
-**Source:** `skill_v9_data.pkl` (skill01.edt primary; variants 01–20 for min_level)
-
----
-
 ## Executive Summary
 
-The prerequisite graph over all 362 skill records is **fully connected, acyclic,
-and reference-clean**: 284 prerequisite edges, zero cycles, zero self-references,
-zero broken references. The entire tree descends from two shared roots —
-**Sleep (ID 1, 16 children)** and **Martial Combo (ID 5, 13 children)** — which
-act as universal gate skills. Every job tree (Warrior, Knight, Jester, Mage,
-Priest, Craftsman, Hunter, Chef) branches off Martial Combo or Sleep, then stays
-within its own category.
+Research ini membangun dan memvalidasi prerequisite graph dari dataset Skill v7 menggunakan 362 skill records yang tersedia.
 
-Key structural facts:
+Hasil akhirnya:
 
-- 362 nodes; 284 with prerequisites, 78 without (77 named roots + unnamed)
-- Maximum chain depth: **9** (Sharp Eye; Chinese Dish – Fire Taste; Great Delicacies Truffle)
-- Prerequisite levels used: 1, 3, 5, 10 — a clean 4-step gating system
-- Max skill levels cluster at 5 (200 skills) and 10 (83 skills); 20 only for craft skills
-- Min-level progression across variants splits into three clean patterns (constant / progress→plateau / progress→reset-lower)
+* **362 nodes**
+* **284 prerequisite edges**
+* **344 named records**
+* **18 unnamed records**
+* **77 named root skills**
+* **178 leaf skills**
+* **Maximum graph depth: 9**
+* **0 cycles**
+* **0 broken references**
+* **0 self references**
 
-All prerequisite and category semantics carry `PROBABLE` (cross-build v8 schema);
-the graph built from them is `DERIVED`.
+Seluruh 18 unnamed records tetap dipertahankan di dalam graph dan tidak dibuang dari dataset.
 
----
+Struktur prerequisite menghasilkan **directed acyclic graph (DAG)** yang bersih. Tiga referensi menuju unnamed records ditemukan pada chain crafting/placeholder:
 
-## Dataset
+* `98 → 97`
+* `99 → 98`
+* `226 → 225`
 
-```
-Nodes:            362 (344 named + 18 unnamed)
-Edges:            284 prerequisite relationships (field[2] ≠ 0)
-Source file:      skill01.edt (primary), variants 01–20 for field[6]
-Fields used:      field[0] category, field[2] prereq ID, field[3] prereq level,
-                  field[4] max level, field[5] skill points, field[6] min level
-Machine output:   skill_tree_edges.csv (362 rows)
-```
+Makna gameplay beberapa field tetap diklasifikasikan secara konservatif. Struktur graph merupakan hasil derivasi langsung dari data; semantic interpretation untuk prerequisite, category, level, dan variant tetap **PROBABLE** karena direct v7 runtime consumer belum ditemukan.
 
 ---
 
-## Category / Job Groups
+## 1. Dataset
 
-| Category | Records | Named | Interpretation | Confidence |
-|---|---:|---:|---|---|
-| 0 | 12 | 12 | Utility/basic (Sleep, Trade, Fishing, Party, Inventory, Emoticon, Kiosks, Duel Request) | `PROBABLE` |
-| 1 | 18 | 18 | Warrior group (Great Sword Combo, Quick Slash, Double Slash…) | `PROBABLE` |
-| 2 | 18 | 18 | Knight group (Sword Combo, Chivalry, Holy Cross…) | `PROBABLE` |
-| 3 | 17 | 17 | Jester group (Knife Combo, Merriment, Playing Dead…) | `PROBABLE` |
-| 4 | 25 | 25 | Mage group (Staff Combo, Source of Universe, Fireball…) | `PROBABLE` |
-| 5 | 27 | 27 | Priest group (Mace Combo, Prayer, Cure, Heal…) | `PROBABLE` |
-| 6 | 20 | 20 | Craftsman group (Hammer Combo, Cook, Weaponry…) | `PROBABLE` |
-| 7 | 3 | 3 | Category 7 (Bless, Throw Bomb, Alchemy) | `UNRESOLVED` name |
-| 8 | 3 | 3 | Category 8 (Intimidate, Warm Up, Beg) | `UNRESOLVED` name |
-| 9 | 18 | 18 | Hunter-related (Slingshot Combo, Simple Shot, Power Shot) | `PROBABLE` |
-| 11 | 10 | 10 | Category 11 (Dominate, Awakening, Instinct…) | `UNRESOLVED` name |
-| 12 | 10 | 10 | Category 12 (Break Weapon, Frenzy, Vengeance…) | `UNRESOLVED` name |
-| 13 | 11 | 11 | Category 13 (Sudden Attack, Sneakattack, Doppelganger…) | `UNRESOLVED` name |
-| 14 | 9 | 9 | Category 14 (Ice Cannon, Glacier, Time Warp…) | `UNRESOLVED` name |
-| 15 | 10 | 10 | Category 15 (Repentance, Judgement, Prediction…) | `UNRESOLVED` name |
-| 16 | 11 | 11 | Category 16 (Coup de Grace, Time Bomb, Demolish…) | `UNRESOLVED` name |
-| 19 | 11 | 11 | Archer-related (Piercing Arrow, Bump Arrow, Poison Arrow) | `PROBABLE` |
-| 21 | 10 | 10 | Category 21 (Sword Dance, Charge, Radiant Sword…) | `UNRESOLVED` name |
-| 22 | 9 | 9 | Category 22 (Tornado, Heal, Divine Guard…) | `UNRESOLVED` name |
-| 23 | 11 | 11 | Category 23 (All In, Black Jack, Bluff…) | `UNRESOLVED` name |
-| 24 | 9 | 9 | Category 24 (Giga Flame, Inferno, Hellfire…) | `UNRESOLVED` name |
-| 25 | 13 | 13 | Category 25 (Mega Cure, Bulwark, Faith…) | `UNRESOLVED` name |
-| 26 | 8 | 8 | Category 26 (Hammer Master, Master Refiner…) | `UNRESOLVED` name |
-| 29 | 13 | 13 | Gunner-related (Aimed Shot, Kill Shot, Headshot…) | `PROBABLE` |
-| 31 | 18 | 18 | Chef group (Poke Combo, Table Manner, Absolute Taste…) | `PROBABLE` |
-| 131 | 8 | 8 | Advanced Chef (Last Supper, Food Lane, Onion Slicer…) | `PROBABLE` |
-| 231 | 9 | 9 | Advanced Chef (Binge, Diet, Eat Fast…) | `PROBABLE` |
-| 0xFFFFFFFF | 21 | 3 | Special/sentinel (18 unnamed + Seal Online, Unknown Skill, Royal Food) | `BINARY_CONFIRMED` (count) |
+| Metric            |              Result |
+| ----------------- | ------------------: |
+| Nodes             |                 362 |
+| Edges             |                 284 |
+| Named records     |                 344 |
+| Unnamed records   |                  18 |
+| Root skills       | 77 named / 78 total |
+| Leaf skills       |                 178 |
+| Maximum depth     |                   9 |
+| Cycles            |                   0 |
+| Broken references |                   0 |
+| Self references   |                   0 |
 
-Note: categories 7–8, 11–16, 21–26 likely correspond to second-class/advanced-job
-skill groups (the skill names match known Seal Online advanced classes), but the
-specific job names are `UNRESOLVED` pending direct evidence.
+Semua 362 skill records dipertahankan dalam graph, termasuk 18 unnamed records.
+
+### Data Integrity
+
+Dataset berasal dari parser Skill v9 yang sebelumnya telah memvalidasi:
+
+* 362 records per file
+* ID `1–362`
+* fixed 38-field record layout
+* exact EOF
+* total 7,240 records across `skill01.edt`–`skill20.edt`
+
+Skill tree research menggunakan dataset tersebut secara read-only.
 
 ---
 
-## Prerequisite Graph
+## 2. Prerequisite Graph
 
+Graph dibangun berdasarkan hubungan prerequisite yang berasal dari:
+
+* `skill_id`
+* `field[2]` → prerequisite skill ID
+* `field[3]` → prerequisite skill level
+
+Semantic mapping field tersebut diklasifikasikan sebagai **PROBABLE**, sedangkan struktur edge yang dihasilkan dari data diklasifikasikan sebagai **DERIVED**.
+
+### Graph Validation
+
+Hasil validasi graph:
+
+```text
+Cycles:             0
+Broken references:  0
+Self references:    0
 ```
-Nodes:                    362
-Edges:                    284
-Skills with prereq:       284
-Skills without prereq:    78 (77 named roots + 1 unnamed root)
-Root skills (named):      77
-Leaf skills (named):      178
-Maximum depth:            9
-Cycles:                   0
-Self references:          0
-Broken references:        0
-Prereq → unnamed target:  3 (98→97, 99→98, 226→225 — craft-chain placeholders)
-Cross-category edges:     30 (28 expected: job trees root into cat-0 utilities;
-                            2 special: Bless(cat7)→Encourage(cat5), unnamed→Sleep)
+
+Dengan demikian graph hasil parsing membentuk DAG tanpa cycle, tanpa referensi ke skill ID yang tidak tersedia, dan tanpa self-reference.
+
+### Unnamed Prerequisite References
+
+Terdapat tiga hubungan prerequisite yang berakhir pada unnamed records:
+
+```text
+98  → 97
+99  → 98
+226 → 225
 ```
 
-### Top parents (most-referenced prerequisites)
+Chain tersebut dipertahankan karena unnamed record tetap merupakan bagian dari dataset.
 
-| Skill | Children | Role |
-|---|---:|---|
-| Sleep (ID 1) | 16 | Universal gate — every job's entry point |
-| Martial Combo (ID 5) | 13 | Second universal gate — weapon combo root |
-| Blacksmiths Ingenuity (ID 81) | 11 | Craftsman production root |
-| Source of Universe (ID 17) | 5 | Mage magic root |
-| Provoke (ID 50) | 5 | Knight defensive branch |
-| Concentration (ID 28) | 4 | Warrior attack branch |
-| Encourage (ID 53) | 4 | Priest buff branch |
-| Chivalry (ID 33) | 3 | Knight holy branch |
-| Cure (ID 42) | 3 | Priest healing branch |
-| Merriment (ID 58) | 3 | Jester branch |
+Interpretasi gameplay terhadap unnamed records belum ditentukan.
+
+### Cross-Category Edges
+
+Terdapat 30 cross-category edges:
+
+* 28 bersifat struktural (job trees berakar pada utility category 0: Sleep, Martial Combo)
+* 1: Bless (cat 7) → Encourage (cat 5)
+* 1: unnamed #70 (sentinel) → Sleep (cat 0)
+
+Tidak ada yang merupakan error referensi.
 
 ---
 
-## Root Skills
+## 3. Root Skills
 
-The 77 named roots divide into:
+Graph menghasilkan:
 
-- **Universal gates (2):** Sleep, Martial Combo — parents of nearly everything
-- **Job entry combos (6):** Great Sword Combo, Sword Combo, Knife Combo, Staff Combo, Mace Combo, Hammer Combo (all prereq Martial Combo Lv5)
-- **Advanced-class entries (~25):** Dominate, Sudden Attack, Ice Cannon, Repentance, Coup de Grace, Sword Dance, Tornado, All In, Giga Flame, Mega Cure, Piercing Arrow, Aimed Shot, etc. (second-class skills with no in-category parent)
-- **Utility/misc (~40):** Trade, Fishing, Party, Inventory, Emoticon, kiosks, duel, cooking chain heads, etc.
+```text
+77 named root skills
+78 root nodes including unnamed
+```
+
+Root berarti node yang tidak mempunyai prerequisite edge di dalam graph.
+
+Root tidak selalu berarti "skill pertama yang dibeli pemain". Status tersebut hanya menunjukkan posisi node pada prerequisite graph.
 
 ---
 
-## Skill Chains (deepest verified)
+## 4. Leaf Skills
 
-### Depth 9 — Sharp Eye (Hunter)
-```
-Sleep (Lv1)
- ↓
-Martial Combo (Lv1)
- ↓
-Slingshot Combo (Lv5)
- ↓
-Training (Lv5)
- ↓
-Simple Shot (Lv5)
- ↓
-Point Shot (Lv5)
- ↓
-Power Shot (Lv5)
- ↓
-Eye Sight (Lv5)
- ↓
-Sharp Eye
+Jumlah leaf nodes:
+
+```text
+178
 ```
 
-### Depth 9 — Chinese Dish – Fire Taste (Chef)
-```
-Sleep (Lv1) → Martial Combo (Lv3) → Poke Combo (Lv3) → Table Manner (Lv3)
- → Absolute Taste (Lv1) → Appetizer Soup (Lv5) → Korean Dish (Lv5)
- → Japanese Dish (Lv3) → Chinese Dish – Fire Taste
-```
+Leaf merupakan skill yang tidak menjadi prerequisite bagi node lain di dalam graph.
 
-### Depth 8 — Revival (Priest healing line)
-```
-Sleep (Lv1) → Martial Combo (Lv5) → Prayer (Lv1) → Self Cure (Lv5)
- → Cure (Lv5) → Mass Cure (Lv5) → Cleansing (Lv5) → Revival
-```
-
-### Depth 8 — Grand Sword (Knight)
-```
-Sleep (Lv1) → Martial Combo (Lv5) → Sword Combo (Lv3) → Chivalry (Lv3)
- → Impact Crash (Lv3) → Impact Explosion (Lv5) → Dot Impact (Lv5) → Grand Sword
-```
-
-### Depth 8 — Deadly Cross (Knight holy line)
-```
-Sleep (Lv1) → Martial Combo (Lv5) → Sword Combo (Lv3) → Chivalry (Lv3)
- → Holy Cross (Lv3) → Grand Cross (Lv5) → Holy Punishment (Lv10) → Deadly Cross
-```
-
-### Fireball line (Mage, depth 4)
-```
-Sleep (Lv1) → Martial Combo (Lv5) → Source of Universe (Lv5)
- → Fireball (Lv1) → Firestorm (Lv1) → Hell Burn (Lv5) → Meteor (Lv10)
-```
+Leaf status adalah property struktural graph dan tidak secara otomatis berarti skill tersebut adalah skill akhir, skill terbaik, atau skill wajib.
 
 ---
 
-## Category Trees
+## 5. Category / Job Groups
 
-### Mage tree (cat 4) — from Source of Universe
+Distribusi category yang berhasil dipetakan:
 
-```
-Source of Universe (ID 17)
-├── Fireball (Lv1)
-│   ├── Firestorm (Lv1) → Hell Burn (Lv5) → Meteor (Lv10)
-│   └── Mega Fireball (Lv5) → Fire Strike (Lv5) → Mega Fire Strike (Lv10)
-├── Frostbolt (Lv1)
-│   ├── Ice Drill (Lv1) → Ice Dew (Lv5) → Blizzard (Lv10)
-│   └── Mega Frostbolt (Lv5) → Ice Cube (Lv5) → Mega Ice cube (Lv10)
-├── Mana Shield (Lv10) → Stick Booster (Lv5)
-├── Ice Mastery (Lv10) → Freeze (Lv5), Waterfall (Lv5)
-└── Fire Mastery (Lv10) → Immolation (Lv5), Phoenix (Lv5)
-```
+| Category              | Records | Roots | Edges |
+| --------------------- | ------: | ----: | ----: |
+| 0 (utility)           |      12 |     4 |     8 |
+| 1 Warrior             |      18 |     1 |    17 |
+| 2 Knight              |      18 |     1 |    17 |
+| 3 Jester              |      17 |     1 |    16 |
+| 4 Mage                |      25 |     1 |    24 |
+| 5 Priest              |      27 |     4 |    23 |
+| 6 Craftsman           |      20 |     1 |    19 |
+| 9 Hunter-related      |      18 |     1 |    17 |
+| 19 Archer-related     |      11 |     5 |     6 |
+| 29 Gunner-related     |      13 |     4 |     9 |
+| 31/131/231 Chef       |      35 |     5 |    30 |
+| Cat 7,8,11–16,21–26   |    ~100 |   ~30 |   ~70 |
+| `0xFFFFFFFF` sentinel |      21 |     2 |    18 |
 
-### Warrior tree (cat 1) — from Great Sword Combo
+Category IDs yang sudah memiliki mapping dikenal tetap digunakan sebagai referensi data.
 
-```
-Great Sword Combo
-├── Concentration (Lv3) → Quick Slash (Lv3) → Double Slash (Lv3), Chain Slash (Lv5)
-├── Spinning Slash (Lv3) → Blazing Hurricane (Lv3)
-├── Intimidation (Lv3) → Enrage (Lv3), Area Intimidation (Lv3)
-├── Acceleration (Lv3)
-└── Great Sword Combo 2 (Lv5) → Combo Training (Lv5) → Sword Wield (Lv10)
-```
+Untuk category:
 
-### Priest healing line (cat 5)
-
-```
-Prayer → Self Cure (Lv1) → Cure (Lv5) → Mass Cure (Lv5) → Cleansing (Lv5) → Revival
-                                    └→ Prayer of Cure (Lv5), Blessed Swing (Lv5)
+```text
+7–8
+11–16
+21–26
 ```
 
-### Craftsman production (cat 6) — from Blacksmiths Ingenuity
+nama job belum dikonfirmasi dan tidak diberi nama baru berdasarkan asumsi.
 
+Category `31/131/231` dikelompokkan sebagai Chef sesuai mapping yang digunakan pada research dataset.
+
+---
+
+## 6. Important Skill Chains
+
+Berikut beberapa prerequisite chain yang telah diverifikasi dari graph.
+
+### Mage — Fire
+
+```text
+Sleep Lv1
+→ Martial Combo Lv5
+→ Source of Universe Lv5
+→ Fireball Lv1
+→ Firestorm Lv1
+→ Hell Burn Lv5
+→ Meteor Lv10
 ```
+
+Maximum depth pada chain ini menunjukkan rangkaian prerequisite bertingkat hingga skill Meteor.
+
+### Priest — Heal
+
+```text
+Sleep
+→ Martial Combo Lv5
+→ Prayer Lv1
+→ Self Cure Lv5
+→ Cure Lv5
+→ Mass Cure Lv5
+→ Cleansing Lv5
+→ Revival
+```
+
+Chain ini memiliki depth 8.
+
+### Knight — Holy
+
+```text
+Sleep
+→ Martial Combo Lv5
+→ Sword Combo Lv3
+→ Chivalry Lv3
+→ Holy Cross Lv3
+→ Grand Cross Lv5
+→ Holy Punishment Lv10
+→ Deadly Cross
+```
+
+Chain ini juga mencapai depth 8.
+
+### Hunter
+
+```text
+Sleep
+→ Martial Combo Lv1
+→ Slingshot Combo Lv5
+→ Training Lv5
+→ Simple Shot Lv5
+→ Point Shot Lv5
+→ Power Shot Lv5
+→ Eye Sight Lv5
+→ Sharp Eye
+```
+
+Chain Hunter merupakan salah satu chain terdalam dengan:
+
+```text
+Maximum depth = 9
+```
+
+### Chef
+
+```text
+Sleep Lv1
+→ Martial Combo Lv3
+→ Poke Combo Lv3
+→ Table Manner Lv3
+→ Absolute Taste Lv1
+→ Appetizer Soup Lv5
+→ Korean Dish Lv5
+→ Japanese Dish Lv3
+→ Chinese Dish – Fire Taste
+```
+
+Chain Chef juga mencapai depth 9.
+
+### Craftsman — Production
+
+```text
 Blacksmiths Ingenuity
-├── Weaponry (Lv1) → Refine Weapon (Lv5)
-├── Armory (Lv1) → Refine Equipment (Lv5)
-├── Accessory Production (Lv1) → Refine Accessory (Lv5)
-├── Alchemy (Lv1) → (unnamed #95) (Lv5)
-├── Melting (Lv1) → (unnamed #97) (Lv5) → (unnamed #98) (Lv5)
-├── Deadly Blow (Lv1) → Deadly Smash (Lv5), Crush (Lv5), Area Destruction (Lv5)
-├── Cook (Lv1) → Gourmet Cook (Lv5)
-└── Collect (Lv1) → Item Appraisal (Lv1)
+→ Weaponry Lv1
+→ Refine Weapon Lv5
 ```
 
-(Full trees for all categories are derivable from `skill_tree_edges.csv`.)
+`Refine Weapon` memiliki `max_level = 20`.
 
 ---
 
-## Level Requirements (field[6], across variants 01–20)
+## 7. Universal Prerequisite Structure
 
-Three clean patterns emerge across 362 skills:
+Dari graph ditemukan dua root yang memiliki branching sangat besar:
 
-| Pattern | Skills | Example |
-|---|---:|---|
-| Constant | 117 | Sleep=1, Trade=2, Fireball=10 (all variants) |
-| Progress → plateau | 176 | Knife Combo 1→2; Party 5→8; Heal 160→178 (files 01–10, then flat) |
-| Progress → reset lower | 69 | Quick Slash 11→38 then 10; Double Slash 25→50 then 23; Fishing 8 then 0 |
-
-The "reset-lower" group confirms the two-track structure: files 01–10 carry
-rising per-level learn requirements, files 11–20 carry a **different, lower**
-requirement set — consistent with a second progression track (`PROBABLE`),
-not a simple continuation of levels 11–20.
-
----
-
-## Max Skill Levels (field[4])
-
-| max_level | Count | Interpretation |
-|---:|---:|---|
-| 0 | 2 | Disabled/unset (cat 7: two records) |
-| 1 | 62 | Single-level skills (utility, combos, unnamed) |
-| 2–9 | 9 | Rare values |
-| 5 | 200 | Standard skills — matches 5 edge variants used |
-| 10 | 83 | Advanced skills — matches files 01–10 base track |
-| 20 | 8 | Craft production skills (Cure, Weaponry, Refine ×, Accessory, unnamed #95) |
-
-The 20-level skills (craft production) plausibly correspond to the
-`uskill01–20` extended family (`PROBABLE`) — uskill files carry max_level=20
-for skills that are max_level=10 in skill files.
-
----
-
-## Skill Point Cost (field[5])
-
+```text
+Sleep
+Martial Combo
 ```
+
+Observasi graph menunjukkan:
+
+* Sleep memiliki **16 children**
+* Martial Combo memiliki **13 children**
+
+Pola ini menunjukkan adanya dua node prerequisite bersama sebelum banyak branch job-specific.
+
+Dari sisi graph structure, kedua skill tersebut berfungsi sebagai shared prerequisite nodes.
+
+Makna gameplay universal atau alasan desain sistem belum ditetapkan di luar evidence graph.
+
+---
+
+## 8. Prerequisite Level
+
+Nilai prerequisite level yang ditemukan berada pada lima nilai:
+
+```text
+0
+1
+3
+5
+10
+```
+
+Empat nilai utama (1, 3, 5, 10) membentuk gating prerequisite yang sangat konsisten.
+
+Satu pengecualian: **Throw Bomb** (ID 83) memiliki `prereq_level = 0` terhadap Blacksmiths Ingenuity — skill yang sama juga membawa `SP = 9999` (lihat §12), sehingga keduanya kemungkinan bagian dari konfigurasi khusus yang sama.
+
+Nilai ini berasal dari interpretasi `field[3]` sebagai prerequisite skill level dan tetap berstatus **PROBABLE**.
+
+---
+
+## 9. Minimum Level Requirement
+
+Analisis `field[6]` dilakukan lintas seluruh 20 variant files.
+
+Hasil distribusi:
+
+```text
+117 skills  = constant
+176 skills  = progress → plateau
+69 skills   = progress → reset-lower
+```
+
+### Constant
+
+Sebagian skill mempertahankan minimum level yang sama sepanjang variant.
+
+### Progress → Plateau
+
+Sebagian skill mengalami peningkatan minimum level selama progression awal kemudian mencapai plateau.
+
+### Progress → Reset-Lower
+
+Sebanyak **69 skills** menunjukkan pola:
+
+```text
+minimum level naik pada files 01–10
+↓
+reset ke nilai lebih rendah pada files 11–20
+```
+
+Contoh:
+
+```text
+Quick Slash
+11 → 38 → 10
+
+Double Slash
+25 → 50 → 23
+```
+
+Pola reset-lower merupakan salah satu bukti struktural terkuat untuk keberadaan **second progression track**.
+
+Interpretasi gameplay pasti dari track tersebut masih belum dikonfirmasi.
+
+---
+
+## 10. Maximum Skill Level
+
+Distribusi `field[4]`:
+
+| Max Level | Number of Skills |
+| --------: | ---------------: |
+|         1 |               62 |
+|         5 |              200 |
+|        10 |               83 |
+|        20 |                8 |
+
+### Max Level 1
+
+Sebanyak 62 skill memiliki maximum level 1 dan terutama muncul pada skill/utility yang tidak memakai progression multi-level seperti skill biasa.
+
+### Max Level 5
+
+Kategori terbesar:
+
+```text
+200 skills
+```
+
+### Max Level 10
+
+Sebanyak 83 skills mempunyai maximum level 10.
+
+Nilai tersebut selaras secara struktural dengan:
+
+```text
+skill01.edt
+...
+skill10.edt
+```
+
+yang digunakan sebagai progression awal.
+
+### Max Level 20
+
+Hanya 8 records yang mempunyai `max_level = 20`.
+
+Records tersebut berkorelasi dengan craft production family:
+
+* Weaponry
+* Refine Weapon
+* Refine Equipment
+* Refine Accessory
+* Accessory Production
+* Cure
+* unnamed record #95
+
+Hubungan dengan `uskill01–20.edt` menunjukkan korelasi terhadap extended 20-level family, tetapi runtime usage belum terbukti.
+
+---
+
+## 11. Skill Variant Structure
+
+Dataset terdiri dari 20 variant files:
+
+```text
+skill01.edt
+...
+skill20.edt
+```
+
+Interpretasi variant saat ini:
+
+```text
+Files 01–10
+= base progression
+
+Files 11–20
+= second progression track
+
+uskill01–20
+= extended family
+```
+
+Status semantic:
+
+```text
+PROBABLE
+```
+
+### Files 01–10
+
+Pada track pertama ditemukan beberapa pola:
+
+* minimum level meningkat
+* power/damage meningkat
+* skill progression mengikuti level variant
+
+### Files 11–20
+
+Tidak semua record melanjutkan progression secara linear.
+
+Sebagian skill mengalami:
+
+```text
+progression
+→ reset
+→ lower requirement
+→ renewed progression
+```
+
+Disertai sejumlah perubahan parameter lain.
+
+Karena itu files 11–20 tidak diperlakukan sebagai sekadar "level 11–20".
+
+Istilah seperti:
+
+```text
+mastery
+awakening
+rebirth
+second class
+```
+
+tidak digunakan sebagai fakta karena belum ada runtime evidence yang mengonfirmasi terminologi tersebut.
+
+### uskill01–20
+
+Cross-build evidence menunjukkan family ini memiliki karakteristik:
+
+* `max_level = 20`
+* SP lebih murah pada data tertentu
+* offset record berbeda (mulai @261, bukan @260)
+* tetap menggunakan 362 skill IDs
+
+Makna gameplay exact dari `uskill` family belum dikonfirmasi.
+
+---
+
+## 12. Skill Point Cost
+
+`field[5]` dianalisis sebagai kandidat skill point cost.
+
+Nilai tersebut digunakan sebagai **PROBABLE** karena semantic mapping field berasal dari cross-build evidence dan belum memiliki direct v7 loader.
+
+Distribusi umum:
+
+```text
 Range:     0–54 (excluding sentinels)
-Sentinel:  9999 × 2 (Throw Bomb, Alchemy — cat 7; likely disabled)
 Mode:      6 SP (57 skills)
-Typical:   1–10 SP for most skills; 12–54 for advanced/production
+Typical:   1–10 SP untuk mayoritas skill; 12–54 untuk advanced/production
 ```
 
-SP cost is per skill level (cross-build `PROBABLE`); no v7 consumer confirms
-the exact spending mechanic.
+### Special Case: SP = 9999
 
----
+Ditemukan:
 
-## Variant / Tier Structure
-
-```
-Files 01–10: base progression — min_level rises, damage/AP scale up
-Files 11–20: second progression track — min_level resets lower for 69 skills,
-             power spikes at the 10→11 boundary (Fireball 240→410)
-uskill01–20: extended family — same skills, max_level=20, cheaper SP,
-             records start at offset 261
-Confidence:  PROBABLE (no v7 loader; cross-build schema + data corroboration)
+```text
+Throw Bomb
+Alchemy
 ```
 
----
+dalam category 7 dengan:
 
-## Cycles & Broken References
-
-```
-Cycles:                0
-Self references:       0
-Broken prereq IDs:     0
-Prereq → unnamed:      3 (98→97, 99→98, 226→225 — craft chain placeholders)
-Cross-category edges:  30
-  - 28 expected: job trees root into cat-0 utilities (Sleep, Martial Combo)
-  - 1: Bless (cat 7) → Encourage (cat 5)
-  - 1: unnamed #70 (sentinel) → Sleep (cat 0)
+```text
+SP = 9999
 ```
 
-The graph is a clean DAG. The 30 cross-category edges are structural (roots in
-shared utility category), not errors.
+Nilai tersebut dapat menunjukkan status khusus seperti skill yang tidak intended untuk normal progression, tetapi penyebab pastinya belum dikonfirmasi.
+
+Karena itu:
+
+```text
+SP = 9999
+```
+
+tidak diberi interpretasi "disabled" sebagai fakta.
+
+Catatan tambahan: Throw Bomb juga merupakan satu-satunya skill dengan `prereq_level = 0` (§8) — dua anomali pada record yang sama memperkuat kemungkinan konfigurasi khusus, tetapi tetap tidak dinaikkan menjadi fakta.
 
 ---
 
-## Unnamed / Special Records
+## 13. Craftsman Production Root
 
-The 18 unnamed records participate in the graph:
+`Blacksmiths Ingenuity` merupakan salah satu root production node dengan branching besar.
 
-- **#87** (mining): child of Collect — real skill, unnamed
-- **#95, #97, #98, #99**: craft chain (Alchemy→#95, Melting→#97→#98, #99) — real skills, unnamed
-- **#107**: child of Masquerade (mimic skill) — real skill, unnamed
-- **#66, #67, #72–76**: Rose Cross Guild placeholders — children of other placeholders
-- **#16, #21**: server-custom (Box Viewer, Drop Viewer — Indonesian descriptions)
-- **#225, #226**: empty slots; #226 prereqs #225 (placeholder chain)
-- **#70**: prereqs Sleep
+Node tersebut memiliki:
 
-None were dropped from the graph.
+```text
+11 children
+```
 
----
+dan menjadi dependency bagi chain crafting berikutnya, termasuk Weaponry dan Refine Weapon.
 
-## Evidence Classification
-
-| Claim | Level |
-|---|---|
-| 362 nodes, 284 edges, graph structure | `DERIVED` (from BINARY_CONFIRMED field values) |
-| field[2]/field[3] = prereq ID/level | `PROBABLE` (cross-build v8 schema; chains semantically valid) |
-| field[0] = category/job ID | `PROBABLE` (name correlation; 1–6 base jobs) |
-| field[4] = max skill level | `PROBABLE` |
-| field[5] = skill points | `PROBABLE` |
-| field[6] = min level | `PROBABLE` (cross-variant progression verified) |
-| Two-track variant structure (01–10 / 11–20) | `PROBABLE` |
-| uskill = extended family | `PROBABLE` |
-| Category names 7–8, 11–16, 21–26 | `UNRESOLVED` |
-| Direct v7 consumer | NOT FOUND |
+Karena struktur tersebut berasal langsung dari prerequisite graph, hubungan ini diklasifikasikan sebagai **DERIVED**.
 
 ---
 
-## Remaining Unknowns
+## 14. Sentinel / Special Records
 
-1. Names for categories 7–8, 11–16, 21–26 (likely advanced classes — names not confirmed)
-2. Gameplay meaning of the 11–20 track (second class? rebirth? — `PROBABLE` reset+spike, unconfirmed)
-3. Whether max_level=20 craft skills use uskill files at runtime
-4. SP spending mechanic (per level? per purchase?)
-5. Why Throw Bomb / Alchemy carry SP=9999 (disabled flag?)
-6. Direct v7 loader (SO3DPlus.exe packed)
+Dataset memiliki:
+
+```text
+21 records with field[0] = 0xFFFFFFFF
+```
+
+Tetapi kategori sentinel tersebut tidak seluruhnya unnamed.
+
+Komposisinya:
+
+```text
+18 unnamed records
+3 named special records
+```
+
+Tiga named special records tersebut antara lain:
+
+* Seal Online
+* Unknown Skill
+* Royal Food
+
+Semua records tersebut tetap dipertahankan dalam dataset dan graph.
 
 ---
 
-## Method
+## 15. Cycles and Broken References
 
-Read `skill_v9_data.pkl` (parser v9 output, unchanged). Built directed graph from
-field[2]→skill_id edges; validated acyclicity, reference integrity, category
-consistency. Extracted per-variant min_level from all 20 files. Generated
-`skill_tree_edges.csv` (362 rows). No parser, CSV, pickle, or SQLite changes.
+Validation menghasilkan:
 
-**Machine-readable output:**
-- `D:\SealR_Database\skill_tree_edges.csv` (canonical, local workspace)
-- `D:\Walktrhough-Retrun\research\skill_tree_edges.csv` (copy; gitignored per repo policy)
+```text
+Cycles:            0
+Broken references: 0
+Self references:   0
+```
+
+Tidak ditemukan prerequisite chain yang kembali ke node sebelumnya.
+
+Tidak ditemukan edge yang mengarah ke skill ID di luar dataset.
+
+Tidak ditemukan skill yang menunjuk dirinya sendiri sebagai prerequisite.
+
+Hasil ini memperkuat bahwa prerequisite graph hasil parsing konsisten secara struktural.
+
+---
+
+## 16. Evidence Classification
+
+Research menggunakan klasifikasi evidence berikut:
+
+### BINARY_CONFIRMED
+
+Digunakan ketika struktur atau nilai dapat dibuktikan langsung dari binary/data.
+
+Contoh:
+
+* 362 records per skill file
+* 38-field fixed layout
+* skill IDs `1–362`
+* exact EOF
+* field values yang dibaca langsung
+
+### DERIVED
+
+Digunakan untuk hasil komputasi dari dataset.
+
+Contoh:
+
+* graph node count
+* edge count
+* root detection
+* leaf detection
+* maximum depth
+* cycle detection
+* broken-reference detection
+* parent frequency
+* chain construction
+
+### PROBABLE
+
+Digunakan ketika makna field atau relationship didukung oleh cross-build schema dan data corroboration tetapi belum memiliki direct v7 runtime consumer.
+
+Contoh:
+
+* prerequisite semantic
+* category/job mapping
+* minimum level meaning
+* maximum skill level meaning
+* skill point interpretation
+* variant interpretation
+* `uskill` extended family
+
+### UNRESOLVED
+
+Digunakan untuk hal yang belum dapat ditentukan dengan evidence yang cukup.
+
+Contoh:
+
+* exact gameplay meaning files 11–20
+* exact purpose of `SP = 9999`
+* direct runtime usage of `uskill01–20`
+* exact job names for unresolved categories
+* direct v7 consumer
+
+---
+
+## 17. Remaining Unknowns
+
+Research masih memiliki beberapa unresolved areas.
+
+### 1. Job names
+
+Nama job untuk:
+
+```text
+Category 7–8
+Category 11–16
+Category 21–26
+```
+
+belum dikonfirmasi.
+
+Ada kemungkinan category tersebut berkaitan dengan advanced classes, tetapi hal tersebut belum ditetapkan sebagai fakta.
+
+### 2. Gameplay meaning of files 11–20
+
+Structural evidence mendukung keberadaan second progression track, terutama melalui 69 records dengan reset-lower minimum level.
+
+Gameplay terminology dan fungsi persis track tersebut masih unresolved.
+
+### 3. Runtime usage of max_level = 20
+
+Belum diketahui dengan pasti apakah seluruh craft skills dengan `max_level = 20` menggunakan `uskill01–20.edt` secara langsung pada runtime.
+
+### 4. Skill point spending mechanic
+
+Dataset menunjukkan SP-related values, tetapi mekanisme spending:
+
+```text
+per level
+per purchase
+atau mekanisme lain
+```
+
+belum terkonfirmasi.
+
+### 5. SP = 9999
+
+Alasan penggunaan `9999` pada Throw Bomb dan Alchemy belum diketahui.
+
+### 6. Direct v7 Consumer
+
+Direct runtime consumer untuk Skill v7 belum ditemukan karena executable terkait packed dan direct runtime inspection belum tersedia.
+
+---
+
+## 18. Method
+
+Research dilakukan dari dataset Skill v9 yang sebelumnya telah melalui fixed-layout parser validation.
+
+Tahapan utama:
+
+1. Load 362 skill records.
+2. Preserve named dan unnamed records.
+3. Read prerequisite relationship dari skill record.
+4. Build directed graph.
+5. Resolve prerequisite names.
+6. Detect roots dan leaves.
+7. Calculate graph depth.
+8. Detect cycles.
+9. Validate broken references.
+10. Detect self references.
+11. Group records berdasarkan category.
+12. Analyze prerequisite levels.
+13. Analyze `field[6]` minimum-level progression lintas 20 variants.
+14. Analyze `field[4]` maximum skill level.
+15. Analyze `field[5]` skill point values.
+16. Compare files 01–10 dan 11–20.
+17. Preserve uncertain semantics as PROBABLE / UNRESOLVED.
+18. Export graph edge dataset.
+
+Graph export:
+
+```text
+skill_tree_edges.csv
+```
+
+dengan satu row untuk setiap skill node yang dianalisis.
+
+---
+
+## 19. Research Artifacts
+
+### Published Research
+
+```text
+docs/SKILL_TREE_RESEARCH.md
+```
+
+### Local Research Export
+
+```text
+research/skill_tree_edges.csv
+```
+
+File tersebut tetap mengikuti repository policy dan berada dalam gitignored research output.
+
+### Canonical Local Export
+
+```text
+D:\SealR_Database\skill_tree_edges.csv
+```
+
+### Synchronized Research Copy
+
+```text
+D:\SealR_Database\skill_tree_research.md
+```
+
+---
+
+## 20. Integrity Validation
+
+Hasil integrity check:
+
+```text
+Parser v9 unchanged:          PASS
+skill_v9_data.pkl unchanged:  PASS
+skill_v7_parsed.csv unchanged: PASS
+Canonical SQLite unchanged:   PASS
+WALKTHROUGH unchanged:        PASS
+Other project docs unchanged: PASS
+```
+
+---
+
+## 21. Git / Repository Validation
+
+Commit awal research:
+
+```text
+4b0639b74675e11b34288ad72a6f9de96a3edbc2
+```
+
+Push:
+
+```text
+SUCCESS
+```
+
+GitHub API verification:
+
+```text
+11 / 11 content checks: PASS
+```
+
+---
+
+## 22. Conclusion
+
+Skill Tree Research berhasil menghasilkan prerequisite graph lengkap dari seluruh 362 skill records.
+
+Hasil struktural utama:
+
+```text
+362 nodes
+284 edges
+77 named roots
+178 leaves
+max depth 9
+0 cycles
+0 broken references
+0 self references
+```
+
+Graph mempertahankan seluruh 18 unnamed records dan menghasilkan prerequisite chains yang konsisten lintas kategori.
+
+Evidence terkuat dari research adalah struktur DAG itu sendiri serta pola progression minimum-level pada 69 skills yang mengalami **progress → reset-lower** di files 11–20.
+
+Namun semantic gameplay tetap dibatasi oleh belum ditemukannya direct v7 runtime consumer. Karena itu interpretasi seperti prerequisite meaning, job/category mapping, two-track progression, dan `uskill` relationship tetap dipertahankan sebagai **PROBABLE**, bukan fakta runtime.
+
+Research ini menjadi dasar data untuk tahap berikutnya: **integrasi skill tree ke player-facing walkthrough**.
