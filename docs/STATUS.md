@@ -93,4 +93,5 @@
 ## Repository
 
 - **Walkthrough:** https://github.com/HellPaw60/Walktrhough-Retrun
-- **Research:** D:\SealR_Database (local only)
+- **Research docs:** `docs/` in this repository (SKILLFILE_V7_RESEARCH.md, SKILL_V7_PARSER_VALIDATION.md, SKILL_V7_VARIANT_ANALYSIS.md, SKILL_V7_SEMANTIC_RESEARCH.md, dll.)
+- **Source/data workspace:** `D:\SealR_Database` (local only — raw extraction, parsers, SQLite, CSV artifacts)

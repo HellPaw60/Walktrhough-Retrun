@@ -344,7 +344,7 @@ Data tidak tersedia di band ini. Equipment progression tercatat sampai L55–65.
 **Total:** 1,928 NPC identities, 293 named, 1,635 unresolved.
 **Locations:** 1,300 placements across 98 maps, 51 unique NPC IDs.
 
-NPC placement ≠ quest giver. Hubungan Quest → NPC semantic belum terbukti (`UNRESOLVED`).
+NPC placement ≠ quest giver. Hubungan Quest → NPC = `PROBABLE` (3,674 candidates dievaluasi; 1,235 valid rows; 94 NPC IDs dengan textual evidence; multi-layer corroboration untuk 10 NPC). Runtime consumer belum ditemukan — player-facing walkthrough belum menggunakannya sebagai fakta absolut.
 
 ---
 
@@ -352,14 +352,14 @@ NPC placement ≠ quest giver. Hubungan Quest → NPC semantic belum terbukti (`
 
 SkillFile v7 berhasil diparse dan dipetakan secara semantic.
 
-Status:
-- 362 skill records per variant file (344 named + 18 unnamed)
-- 20 variant files = skill level/rank progression (`PROBABLE`)
-- prerequisite relationships available (field[2]/field[3])
-- max level available (field[4])
-- minimum level requirements available (field[6])
-- skill point values available (field[5])
-- buff links available (field[23]/field[27] → buff.edt, `BINARY_CONFIRMED`)
+Status (dengan evidence level):
+- 362 skill records per variant file (344 named + 18 unnamed) — `BINARY_CONFIRMED`
+- 20 variant files — structure `BINARY_CONFIRMED`; variant meaning (level/rank progression) `PROBABLE`
+- prerequisite relationships (field[2]/field[3]) — `PROBABLE`
+- max skill level (field[4]) — `PROBABLE`
+- minimum level requirements (field[6]) — `PROBABLE`
+- skill point values (field[5]) — `PROBABLE`
+- buff links field[23]/field[27] → buff.edt — `BINARY_CONFIRMED` cross-table joins
 
 Detail lengkap: `docs/SKILL_V7_SEMANTIC_RESEARCH.md`
 
@@ -372,7 +372,7 @@ Player-facing skill build / recommendation belum diintegrasikan.
 | Area | Status | Reason |
 |---|---|---|
 | Quest chain | `UNRESOLVED` | No flag transition logic found in binary |
-| Quest → NPC semantic | `UNRESOLVED` | ID equality only, no consumer runtime |
+| Quest → NPC semantic | `PROBABLE` | Multi-layer corroboration (text + dialog + location); runtime consumer not found — not used as absolute fact in walkthrough |
 | Quest → Monster | `UNRESOLVED` | No exact reference in quest.edt binary |
 | Drop table | `UNRESOLVED` | `drop.py` schema exists, no actual file in client |
 | DropRate | `DEFERRED` | Not investigated |
