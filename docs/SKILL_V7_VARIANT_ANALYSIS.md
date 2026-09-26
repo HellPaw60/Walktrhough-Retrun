@@ -110,7 +110,7 @@ Identical across all 20 files — utility skill, one of 21 constant named record
 | A: skill01–20 = skill levels/ranks | **`PROBABLE`** | 330/362 records change; power rises then plateaus; text identical; 20-step progression |
 | B: Server config tiers | Weak | Smooth per-skill progression fits level scaling |
 | C: Client/platform variants | Rejected | No platform differences |
-| D: Language variants | Rejected | All text identical (Reload ID 322 percentage is a level progression, not localization) |
+| D: Language variants | Rejected | No localization/language variant was observed. Reload (ID 322) changes percentage text across variants, but this is consistent with progression data rather than localization |
 | E: Unrelated duplicates | Rejected | Systematic progression |
 
 ---

@@ -170,7 +170,7 @@ Conclusion unchanged: **skill01–skill20 = skill level/rank variants — `PROBA
 | 5 | 27 | Mace Combo, Prayer | Priest group |
 | 6 | 20 | Hammer Combo, Cook | Craftsman group |
 | 7–31, 131, 231 | ~200 | Hunter/Gunner/Archer/Chef/advanced groups | Sub-class groups (`UNRESOLVED` names) |
-| 0xFFFFFFFF | 21 | 18 unnamed + Seal Online, Unknown Skill, Royal Food | Special/sentinel |
+| 0xFFFFFFFF | 21 | 18 unnamed + 3 named special records (Seal Online, Unknown Skill, Royal Food) | Special/sentinel |
 
 ---
 
