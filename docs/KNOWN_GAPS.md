@@ -5,7 +5,6 @@
 | Area | Evidence | Reason |
 |---|---|---|
 | Quest chain | `UNRESOLVED` | No flag transition consumer found |
-| Quest → NPC | `UNRESOLVED` | Equality only, no runtime evidence |
 | Quest → Monster | `UNRESOLVED` | No exact reference in binary |
 | 1,635 NPC names | `UNRESOLVED` | Not found in `monsters.edt` or client string table |
 | Skill semantics | `UNRESOLVED` | Binary SkillFile v7 format not parsed; effect mapping unknown |
@@ -16,6 +15,7 @@
 
 | Area | Evidence | Detail |
 |---|---|---|
+| Quest → NPC | `PROBABLE` | 3,674 candidates evaluated; 1,235 valid rows after removing false positives (NPC 2/3 = monsters); 94 NPC IDs with textual evidence (names in quest dialog); 10 NPC IDs with multi-layer corroboration (text + dialog + location); no runtime consumer found |
 | NPC identities | `CLIENT_FACT` | 1,928 IDs from `npc_locations`, `npc_dialog`, `quest_dialog_nodes` |
 | NPC placements | `CLIENT_FACT` | 1,300 placements from `map/npc*.edt` |
 | NPC names | `PROBABLE` | 293 resolved from `monsters.edt` |

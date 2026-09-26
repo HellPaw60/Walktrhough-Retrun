@@ -61,7 +61,6 @@
 | Area | Status |
 |---|---|
 | Quest chain | `UNRESOLVED` |
-| Quest → NPC semantic | `UNRESOLVED` |
 | Quest → Monster | `UNRESOLVED` |
 | Drop table | `UNRESOLVED` |
 | DropRate | `DEFERRED` |
@@ -74,6 +73,7 @@
 
 | Area | Status | Reason |
 |---|---|---|
+| Quest → NPC | `PROBABLE` | 3,674 candidates evaluated; 1,235 valid rows; 94 NPC IDs with textual evidence (names in quest dialog); 10 NPC IDs with multi-layer corroboration (text + dialog + location); no runtime consumer found |
 | NPC locations | `CLIENT_FACT` | 1,300 placements extracted from `npc*.edt` |
 | NPC identities | `CLIENT_FACT` | 1,928 IDs from client (dialog/location/quest refs) |
 | Quest descriptions | `CLIENT_FACT` | 717 records from `flag.edt` |
