@@ -1,19 +1,35 @@
 # Skill v7 Parser Validation Report
 
 **Date:** 2026-09-26
-**Parser Version:** 2.0 (strict chain validation)
+**Parser Version:** 3.0 (final)
 
 ---
 
 ## 1. Parser Accuracy
 
-### Per-File Counts
+### Per-File Counts (Exact)
 
-| File | Header Max ID | Valid Records | Missing |
+| File | Header Max ID | Valid Records | Missing IDs |
 |---|---|---|---|
 | skill01.edt | 363 | 333 | 30 |
 | skill02.edt | 363 | 333 | 30 |
-| ... | ... | ... | ... |
+| skill03.edt | 363 | 333 | 30 |
+| skill04.edt | 363 | 333 | 30 |
+| skill05.edt | 363 | 333 | 30 |
+| skill06.edt | 363 | 333 | 30 |
+| skill07.edt | 363 | 333 | 30 |
+| skill08.edt | 363 | 333 | 30 |
+| skill09.edt | 363 | 333 | 30 |
+| skill10.edt | 363 | 333 | 30 |
+| skill11.edt | 363 | 333 | 30 |
+| skill12.edt | 363 | 333 | 30 |
+| skill13.edt | 363 | 333 | 30 |
+| skill14.edt | 363 | 333 | 30 |
+| skill15.edt | 363 | 333 | 30 |
+| skill16.edt | 363 | 333 | 30 |
+| skill17.edt | 363 | 333 | 30 |
+| skill18.edt | 363 | 333 | 30 |
+| skill19.edt | 363 | 333 | 30 |
 | skill20.edt | 363 | 333 | 30 |
 | **Total** | - | **6,660** | **600** |
 
@@ -62,7 +78,7 @@ Most records (95%) have 37 fields.
 
 ### Distribution
 
-| Value | Semantic | Count |
+| Value | Semantic | Records (all files) |
 |---|---|---|
 | 1 | Warrior | 540 |
 | 2 | Knight | 340 |
@@ -95,10 +111,12 @@ Most records (95%) have 37 fields.
 ### Duplicate Names
 | Name | Count | IDs |
 |---|---|---|
-| Combo Master | 3 | 164, 204, 279 |
-| High Quality Sense | 4 | 323, 324, 352, 354 |
-| Reload | 2 | 254, 322 |
+| Accurate Appraisal | 2 | 352, 354 |
+| Combo Master | 3 | 163, 189, 203 |
+| Concentration | 2 | 28, 332 |
 | Enhance Bow | 2 | 262, 319 |
+| High Quality Sense | 2 | 323, 324 |
+| Reload | 2 | 254, 322 |
 
 ---
 
@@ -106,21 +124,22 @@ Most records (95%) have 37 fields.
 
 ### Fireball (ID=18) Field Progression
 
-| File | field[18] | Interpretation |
+| File | field[18] | Pattern |
 |---|---|---|
-| skill01 | 75 | Base damage? |
-| skill05 | 135 | Increased |
-| skill10 | 240 | Increased |
-| skill15 | 410 | Increased |
-| skill20 | 410 | Saturated |
+| 1 | 75 | Base |
+| 5 | 135 | Increasing |
+| 10 | 240 | Increasing |
+| 15 | 410 | Plateau |
+| 20 | 410 | Plateau |
 
-**Hypothesis**: Each file represents a skill level tier (1-20).
+**Observation**: field[18] increases monotonically 1→10 then plateaus 11→20.
+This supports the hypothesis that each file represents a skill level tier.
 
 ---
 
 ## 7. Known Issues
 
-1. **~30 records per file not parsed** — Missing IDs
+1. **30 records per file not parsed** — Missing IDs
 2. **Field semantics mostly unknown** — Only job type confirmed
 3. **Float fields not decoded** — Read as uint32
 4. **No prerequisite data** — No skill-to-skill references
