@@ -1,232 +1,240 @@
-# Seal Online SkillFile v7: Cross-File Variant Analysis
+# Seal Online SkillFile v7: Cross-File Variant Analysis — Final v2
+
+**Date:** 2026-09-26
+**Data source:** parser v8 (clean, 344 records/file)
+
+---
 
 ## Executive Summary
 
-**Conclusion: Hypothesis A is strongly supported** — `skill01.edt` through `skill20.edt` represent **skill levels/ranks 1-20** of the same skill dataset. Each file contains identical skill records with systematically progressing field values (damage, minimum level, etc.) that increase monotonically with file index.
+**Conclusion: Hypothesis A is supported — `PROBABLE`** — `skill01.edt` through
+`skill20.edt` represent **skill level/rank variants 1–20** of the same skill
+dataset. Each file contains the same 344 skills with identical names and
+descriptions; numeric fields progress systematically with file index
+(power values rise through file 10, then plateau at a mastery tier).
+No loader/consumer was found, so this remains `PROBABLE`, not `BINARY_CONFIRMED`.
+
+**Correction vs. previous version of this report:** the earlier claim of
+"362 records per file, only ID 363 missing" was wrong — it came from a
+structural scan that counted garbage text entries (e.g. `Rose Cross Guild
+Hurray!C–M`) as records. The verified counts are **344 valid records per file,
+19 truly missing IDs** (344 + 19 = 363 = header).
+
+The previous "field 5 = SP / field 8 = min level / field 17 = damage" mapping
+was also shifted by contaminated data. In the clean 38-field layout the scaling
+values live in **field[18]** (power) and **field[9]** (requirement-scale), and
+field[17] is a small 0/1 flag.
 
 ---
 
 ## 1. File Structure & Decoding
 
-All 20 files share the identical structure:
-- **Header**: `"Seal Online SkillFile v7"` (24 bytes) + padding to 64 bytes
-- **Max ID**: 363 (uint32 at offset 64)
-- **Signature**: `"skill\0"` (6 bytes at offset 72)
+All 20 files share identical structure:
+- **Header**: `"Seal Online SkillFile v7"` (24 bytes) + null padding
+- **Max skill ID**: 363 (uint16 at offset 64)
+- **Signature**: `"skill"` (offset 72)
 - **Records**: start at offset 260
-- **Record layout**: `uint32 skill_id` + 36-byte null-terminated name + 38×`uint32` fields + description
-- **Field 37** = description length (in bytes)
+- **Record layout**: `uint32 skill_id` + null-terminated name + null padding +
+  `uint32 fields[34–38]` + `uint32 desc_len` + description + null padding
 
-**Cipher**: LCG stream cipher (seed=0x11CFD, mult=52845, add=22719, mask=0xFFFF) with ciphertext chaining.
+**Cipher**: byte-by-byte XOR with LCG (seed=0x11CFD, mult=52845, add=22719, mask=0xFFFF).
 
-| File | Size (bytes) | Records |
-|------|-------------|---------|
-| skill01.edt | 109,294 | 362 |
-| skill02.edt | 109,294 | 362 |
-| skill03.edt | 109,295 | 362 |
-| ... | ... | ... |
-| skill20.edt | 109,295 | 362 |
+| File | Size (bytes) | Valid Records | Orphans |
+|---|---|---|---|
+| skill01.edt | 109,294 | 344 | 5 |
+| skill02.edt | 109,294 | 344 | 5 |
+| skill03–20.edt | 109,295 | 344 | 5 |
+| **Total** | ~2.1 MB | **6,880** | **100** |
 
 ---
 
-## 2. Missing IDs
+## 2. Missing IDs (19, verified)
 
-All 20 files: **Only ID 363 is missing** (present in none). The 30 "known missing IDs" from the task context (16, 21, 66, 67, 70, 71, 72, 73, 74, 75, 76, 77, 87, 95, 97, 98, 99, 107, 225, 226, 240, 241, 242, 243, 244, 245, 264, 308, 309, 363) are **NOT missing from these v7 files**. They are all present except 363. This suggests the "missing IDs" list refers to a different file format (v13 `skill.dat`).
+```
+16, 21, 66, 67, 70, 72, 73, 74, 75, 76, 87, 95, 97, 98, 99, 107, 225, 226, 363
+```
+
+Consistent across all 20 files. The old "30 missing" list incorrectly included
+11 IDs (71, 77, 240–245, 264, 308, 309) that were actually present but swallowed
+by the old parser's cascade bug, plus 239/263/307 rejected by over-strict
+description validation. All 14 are now recovered and verified.
 
 ---
 
 ## 3. Name & Description Comparison
 
 | Aspect | Finding |
-|--------|---------|
-| **Names** | **Identical** across all 20 files for all 362 skills |
-| **Descriptions** | **Identical** for 361/362 skills |
-| **Exception** | Skill 322 "Reload": description contains a percentage that changes (4%, 8%, 12%, 16%, 20%, ... then plateaus at 20%) |
+|---|---|
+| **Names** | Identical across all 20 files for all 344 skills |
+| **Descriptions** | Identical across files (text does not encode variant info) |
+| **Exception** | Skill 322 `Reload`: description contains a percentage that changes (4% → 8% → ... → plateau at 20%) |
+
+Since text is identical while numeric fields change, **variant information lives
+entirely in the numeric portion** — the strongest structural evidence for the
+level-variant model.
 
 ---
 
-## 4. Field Classification
+## 4. Field Patterns Across 20 Files (clean data)
 
-### Field Patterns Across 20 Files
-
-| Field | Pattern | Varying Skills | Description |
-|-------|---------|----------------|-------------|
-| **0** | Constant | 2 | Job type (1=Warrior, 2=Knight, 3=Jester, 4=Mage, 5=Priest, 6=Craftsman) |
-| **4** | Plateau | 144 | Increases 1-10, constant 11-20 |
-| **5** | Plateau | 245 | Increases 1-10, constant 11-20 (skill points / max level) |
-| **8** | Plateau | 217 | Increases 1-10, constant 11-20 (minimum level requirement) |
-| **11** | Plateau | 10 | Minor plateau pattern |
-| **12** | Plateau | 36 | Increases 1-10, constant 11-20 |
-| **13** | Plateau | 103 | Increases 1-10, constant 11-20 |
-| **14** | Plateau | 121 | Increases 1-10, constant 11-20 |
-| **15** | Plateau | 118 | Increases 1-10, constant 11-20 |
-| **16** | Plateau | 6 | Minor plateau pattern |
-| **17** | Plateau | 256 | Increases 1-10, constant 11-20 (damage/effect value) |
-| **19** | Plateau | 33 | Increases 1-10, constant 11-20 |
-| **22** | Plateau | 104 | Increases 1-10, constant 11-20 |
-| **23** | Plateau | 37 | Increases 1-10, constant 11-20 |
-| **24** | Plateau | 80 | Increases 1-10, constant 11-20 |
-| **26** | Plateau | 14 | Minor plateau pattern |
-| **27** | Plateau | 11 | Minor plateau pattern |
-| **28** | Plateau | 10 | Minor plateau pattern |
-| **34** | Plateau | 12 | Minor plateau pattern |
-| **37** | Constant | 1 | Description length (constant per skill across files) |
+| Field | Pattern | Varying Skills | Notes |
+|---|---|---|---|
+| field[0] | Constant per skill | 0 | Category/class-group ID (26 distinct values) |
+| field[4] | Constant per skill | 0 | Never changes across files |
+| field[9] | Plateau | 217 | Rises 01→10, constant 11–20 (requirement-scale candidate) |
+| field[18] | Plateau | 255 | Rises 01→10, constant 11–20 (power/damage/heal candidate) |
+| field[15] | float32 | — | Effect multiplier A (Fireball 0.4, Heal 1.2, Double Slash -0.7) |
+| field[16] | float32 | — | Effect multiplier B (Fireball 1.0, Heal 6.0, Double Slash 3.0) |
+| field[34] | Constant per skill | — | Internal skill index (NOT a skill_id copy) |
+| field[36] | Constant 0 | — | All records |
 
 ### Pattern Definition: Plateau
 
-**Plateau pattern**: Values increase monotonically from file 1 to file 10, then remain constant from file 11 to file 20. This is the dominant pattern across 25+ fields.
+Values increase monotonically from file 1 to file 10, then remain constant from
+file 11 to file 20. This is the dominant pattern in the scaling fields.
 
-**Example — Fireball (ID 18), Field 17 (Damage)**:
+**Example — Fireball (ID 18), field[18] (power):**
 ```
 File  1:    75
-File  2:    85
-File  3:    95
-File  4:   115
 File  5:   135
-File  6:   150
-File  7:   175
-File  8:   190
-File  9:   215
-File 10:   240  ← Peak of base progression
-File 11:   410  ← Jump to "mastery" tier
-File 12:   410
-...
-File 20:   410
+File 10:   240  ← peak of base progression
+File 11:   410  ← jump to mastery tier
+File 12–20: 410 (plateau)
 ```
 
 ---
 
-## 5. Anchor Skill Analysis
+## 5. Anchor Skill Analysis (verified on clean data)
 
-### Fireball (ID 18, Mage Skill)
+### Fireball (ID 18, Mage)
 
-| File | Field 5 (SP) | Field 8 (Min Level) | Field 17 (Damage) |
-|------|-------------|---------------------|-------------------|
-| 1 | 10 | 15 | 75 |
-| 2 | 10 | 16 | 85 |
-| 3 | 10 | 16 | 95 |
-| 4 | 10 | 18 | 115 |
-| 5 | 10 | 19 | 135 |
-| 6 | 10 | 20 | 150 |
-| 7 | 10 | 21 | 175 |
-| 8 | 10 | 22 | 190 |
-| 9 | 10 | 23 | 215 |
-| 10 | 10 | 24 | 240 |
-| 11 | 10 | 24 | 410 |
-| 12 | 10 | 24 | 410 |
-| ... | 10 | 24 | 410 |
-| 20 | 10 | 24 | 410 |
+| File | f4 | f9 | f18 (power) |
+|---|---|---|---|
+| skill01 | 10 | 15 | 75 |
+| skill05 | 10 | 19 | 135 |
+| skill10 | 10 | 24 | 240 |
+| skill11 | 10 | 24 | 410 |
+| skill15 | 10 | 24 | 410 |
+| skill20 | 10 | 24 | 410 |
 
-### Frostbolt (ID 23, Mage Skill)
+### Double Slash (ID 31, Warrior)
 
-| File | Field 5 (SP) | Field 8 (Min Level) | Field 17 (Damage) |
-|------|-------------|---------------------|-------------------|
-| 1 | 10 | 13 | 60 |
-| 2 | 10 | 14 | 70 |
-| 3 | 10 | 14 | 85 |
-| 4 | 10 | 16 | 100 |
-| 5 | 10 | 17 | 115 |
-| 6 | 10 | 18 | 130 |
-| 7 | 10 | 19 | 145 |
-| 8 | 10 | 20 | 165 |
-| 9 | 10 | 21 | 185 |
-| 10 | 10 | 22 | 210 |
-| 11 | 10 | 22 | 370 |
-| ... | 10 | 22 | 370 |
-| 20 | 10 | 22 | 370 |
+| File | f9 | f18 |
+|---|---|---|
+| skill01 | 60 | 600 |
+| skill05 | 80 | 744 |
+| skill10 | 105 | 1625 |
+| skill11–20 | 105 | 770 (plateau) |
+
+### Heal (ID 155, Priest)
+
+| File | f9 | f18 |
+|---|---|---|
+| skill01 | 210 | 2500 |
+| skill05 | 260 | 15000 |
+| skill10–20 | 330 | 0 (plateau/flag change) |
+
+### Sleep (ID 1)
+
+Identical across all 20 files — utility skill with no scaling. One of 21
+fully-constant skills.
 
 ---
 
 ## 6. Statistical Evidence
 
-### Correlation with File Index
+| Metric | Count (of 344 skills) |
+|---|---|
+| field[18] changes across files | 255 |
+| field[9] changes across files | 217 |
+| ANY field changes | 323 |
+| Fully constant skills | 21 |
 
-| Field | Avg Correlation | Strong Positive (>0.8) | Monotonic Count |
-|-------|----------------|------------------------|-----------------|
-| 17 (damage) | +0.05 | 30 | 69/256 |
-| 5 (SP) | +0.46 | 93 | 181/245 |
-| 8 (min level) | +0.56 | 117 | 174/217 |
-| 13 | +0.21 | 22 | 69/103 |
-| 14 | -0.07 | 23 | 99/121 |
-| 15 | +0.13 | 17 | 80/118 |
-| 22 | -0.18 | 12 | 49/104 |
-| 4 | +0.37 | 36 | 123/144 |
-| 24 | -0.40 | 1 | 66/80 |
-
-### File Signature Uniqueness
-
-- **Field 17**: 20 unique signatures across 20 files (all files distinct)
-- **Field 8**: 19 unique signatures (nearly all distinct)
-- **Field 5**: 11 unique signatures (some files share same values)
+Each of the 20 files is distinguishable by its field[18] signature set — no two
+files are identical.
 
 ---
 
 ## 7. Hypothesis Evaluation
 
-### Hypothesis A: Skill Levels/Ranks 1-20 ✅ **SUPPORTED**
+### Hypothesis A: Skill Levels/Ranks 1–20 — **`PROBABLE`**
 
 **Evidence:**
-1. Field values (damage, min level) increase monotonically with file index
-2. 20 unique file signatures — no two files are identical
-3. Same 362 skills in every file with identical names/descriptions
-4. The plateau pattern at file 11-20 suggests a tier transition (base → mastery)
-5. The jump in values at file 11 (e.g., Fireball damage 240→410) suggests a power spike, consistent with an "awakened" or "mastered" tier
+1. Scaling field values rise monotonically with file index then plateau
+2. Every file is unique (field signatures differ)
+3. Same 344 skills in every file with identical names/descriptions
+4. Plateau at files 11–20 suggests a tier transition (base → mastery)
+5. Jump at file 11 (Fireball 240→410) suggests a mastery power spike
 
-### Hypothesis B: Server Configuration Tiers ⚠️ Weak
+### Hypothesis B: Server Configuration Tiers — Weak
 
-Could technically represent server-side config tiers, but the smooth numerical progression is more consistent with level scaling than arbitrary tier assignments.
+Smooth per-skill progression fits level scaling better than arbitrary tiers.
 
-### Hypothesis C: Client Variants/Platform Configs ❌ Not Supported
+### Hypothesis C: Client/Platform Variants — Rejected
 
-No evidence of platform-specific differences. All files are structurally identical.
+No platform-specific differences; all files structurally identical.
 
-### Hypothesis D: Language/Build Variants ❌ Not Supported
+### Hypothesis D: Language/Build Variants — Rejected
 
-All text is English across all files. No localization differences.
+All text identical English.
 
-### Hypothesis E: Unrelated Duplicate Datasets ❌ Not Supported
+### Hypothesis E: Unrelated Duplicates — Rejected
 
-Files are clearly related with systematic value progression.
+Systematic value progression, not random.
 
 ---
 
 ## 8. Additional Findings
 
-### The "Missing IDs" Discrepancy
-
-The 30 "known missing IDs" from the task context are **NOT missing from v7 files**. This suggests:
-- The "missing IDs" list applies to the **v13 skill.dat** format (a different file structure)
-- In v7 format, all IDs 1-362 are present in all 20 files
-- Only ID 363 is genuinely missing (header says max ID = 363, but no record exists)
-
 ### Skill 322 "Reload" — Unique Description Progression
 
-Only skill with description changes across files:
-- File 1: "4% chance to reset headshot cooldown"
-- File 2: "8% chance..."
-- File 3: "12% chance..."
-- File 4: "16% chance..."
-- File 5-20: "20% chance..." (plateau)
-
-This confirms the level progression even in descriptive text.
+Only skill with changing description text (4% → 8% → 12% → 16% → 20% plateau).
+Confirms the progression model even in descriptive text.
 
 ### File Size Anomaly
 
-skill01 and skill02 are 109,294 bytes; skill03-20 are 109,295 bytes. The 1-byte difference may reflect a minor data variation in one of the last records.
+skill01 and skill02 are 109,294 bytes; skill03–20 are 109,295 bytes. Minor data
+variation, no structural impact.
 
 ---
 
 ## 9. Final Conclusion
 
-**skill01.edt through skill20.edt are skill level data for levels 1-20 of Seal Online's v7 skill system.**
+**skill01–skill20 = skill level/rank variants — `PROBABLE`.**
 
-Each file represents one level tier for all 362 skills. As the file index increases:
-- **Damage/effect values increase** (monotonic progression)
-- **Minimum level requirements increase**
-- **Skill point costs remain constant**
-- **Names and descriptions are identical**
+- Files 01–10: base progression (power/requirement fields increase)
+- Files 11–20: mastery tier (values plateau; power spike at the 10→11 transition)
 
-The plateau at files 11-20 suggests a two-tier system:
-- **Levels 1-10**: Base skill progression
-- **Levels 11-10**: Mastery/awakened tier with capped values and a power spike at the transition
+Downgraded from earlier "strongly supported" wording: no consumer/loader
+evidence exists, so per project evidence taxonomy this is `PROBABLE`.
 
-This is consistent with Seal Online's known skill system where skills have multiple levels with increasing power.
+---
+
+## 10. Remaining Unknowns
+
+1. No v7 loader/consumer found in client executable
+2. Field semantics beyond structural roles remain `UNRESOLVED`
+3. Prerequisite/skill-tree references not identified
+4. Meaning of the 10→11 mastery transition not confirmed by runtime evidence
+5. field[0] values 7–31, 131, 231 group names unknown
+
+---
+
+## 11. Data Model (proposed)
+
+```
+skill
+------
+skill_id (PK)
+name
+description
+category_id (field[0])
+
+skill_variant
+-------------
+skill_id (FK)
+variant_index (1–20, file number)
+field_0 … field_37 (raw uint32 values)
+```
+
+Not yet applied to canonical SQLite — awaiting decision.

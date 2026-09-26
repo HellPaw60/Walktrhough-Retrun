@@ -1,163 +1,148 @@
-# Skill v7 Parser Validation Report
+# Skill v7 Parser Validation Report — v8
 
 **Date:** 2026-09-26
-**Parser Version:** 3.0 (final)
+**Parser Version:** 8 (final)
 
 ---
 
 ## 1. Parser Accuracy
 
-### Per-File Counts (Exact)
+### Per-File Counts (exact, verified)
 
-| File | Header Max ID | Valid Records | Missing IDs |
-|---|---|---|---|
-| skill01.edt | 363 | 333 | 30 |
-| skill02.edt | 363 | 333 | 30 |
-| skill03.edt | 363 | 333 | 30 |
-| skill04.edt | 363 | 333 | 30 |
-| skill05.edt | 363 | 333 | 30 |
-| skill06.edt | 363 | 333 | 30 |
-| skill07.edt | 363 | 333 | 30 |
-| skill08.edt | 363 | 333 | 30 |
-| skill09.edt | 363 | 333 | 30 |
-| skill10.edt | 363 | 333 | 30 |
-| skill11.edt | 363 | 333 | 30 |
-| skill12.edt | 363 | 333 | 30 |
-| skill13.edt | 363 | 333 | 30 |
-| skill14.edt | 363 | 333 | 30 |
-| skill15.edt | 363 | 333 | 30 |
-| skill16.edt | 363 | 333 | 30 |
-| skill17.edt | 363 | 333 | 30 |
-| skill18.edt | 363 | 333 | 30 |
-| skill19.edt | 363 | 333 | 30 |
-| skill20.edt | 363 | 333 | 30 |
-| **Total** | - | **6,660** | **600** |
+| File | Header Max ID | Valid Records | Orphans | Missing |
+|---|---|---|---|---|
+| skill01.edt | 363 | 344 | 5 | 19 |
+| skill02.edt | 363 | 344 | 5 | 19 |
+| skill03.edt | 363 | 344 | 5 | 19 |
+| skill04.edt | 363 | 344 | 5 | 19 |
+| skill05.edt | 363 | 344 | 5 | 19 |
+| skill06.edt | 363 | 344 | 5 | 19 |
+| skill07.edt | 363 | 344 | 5 | 19 |
+| skill08.edt | 363 | 344 | 5 | 19 |
+| skill09.edt | 363 | 344 | 5 | 19 |
+| skill10.edt | 363 | 344 | 5 | 19 |
+| skill11.edt | 363 | 344 | 5 | 19 |
+| skill12.edt | 363 | 344 | 5 | 19 |
+| skill13.edt | 363 | 344 | 5 | 19 |
+| skill14.edt | 363 | 344 | 5 | 19 |
+| skill15.edt | 363 | 344 | 5 | 19 |
+| skill16.edt | 363 | 344 | 5 | 19 |
+| skill17.edt | 363 | 344 | 5 | 19 |
+| skill18.edt | 363 | 344 | 5 | 19 |
+| skill19.edt | 363 | 344 | 5 | 19 |
+| skill20.edt | 363 | 344 | 5 | 19 |
+| **Total** | — | **6,880** | **100** | — |
 
-All files have identical counts and distributions.
-
----
-
-## 2. Missing IDs (30 per file)
-
-```
-16, 21, 66, 67, 70, 71, 72, 73, 74, 75, 76, 77,
-87, 95, 97, 98, 99, 107, 225, 226, 240, 241,
-242, 243, 244, 245, 264, 308, 309, 363
-```
-
-These IDs either don't exist, have corrupted data, or use different format.
+**Reconciliation: 344 valid + 19 missing = 363 = header. EXACT.**
 
 ---
 
-## 3. Record Layout Verification
+## 2. Parser Bug History (why counts changed)
 
-### Confirmed Structure
-```
-uint32  skill_id         (verified: matches header)
-char[]  name             (verified: printable ASCII, uppercase first char)
-uint8   null_padding     (verified: variable length)
-uint32  fields[36-38]    (verified: mostly small ints)
-uint32  desc_len         (verified: matches description byte count)
-uint32  skill_id_copy    (verified: matches skill_id)
-char[]  description      (verified: ASCII text, length = desc_len)
-uint8   null_padding     (verified: variable length)
-```
-
-### Field Count Distribution
-| Field Count | Records |
-|---|---|
-| 36 | 178 |
-| 37 | 6,340 |
-| 38 | 178 |
-
-Most records (95%) have 37 fields.
-
----
-
-## 4. Job Field (field[0]) Validation
-
-### Distribution
-
-| Value | Semantic | Records (all files) |
+| Version | Records/file | Bug |
 |---|---|---|
-| 1 | Warrior | 540 |
-| 2 | Knight | 340 |
-| 3 | Jester | 340 |
-| 4 | Mage | 480 |
-| 5 | Priest | 500 |
-| 6 | Craftsman | 400 |
-| Other | Unknown | 4,360 |
+| v2/v3 (old) | 333 | Cascade bug: garbage records (`Rose Cross Guild Hurray!C–M`, `Seal Online G`) accepted → swallowed 11 real records (71, 77, 240–245, 264, 308, 309). Over-strict desc validation rejected 3 more (239, 263, 307) |
+| v4 | 341 | Field-limit fix recovered 11 records, but lost 239, 263, 307 (UTF-8 desc, empty desc, short desc) |
+| v5/v6 | 342–344 | Relaxed desc validation recovered some, but empty-desc fallback re-introduced cascade (garbage 44-field match swallowed records again) |
+| **v8 (final)** | **344** | Inline empty-desc check (fields 36–39 + next-record validation) + field-count window 32–40 for desc matches. Clean field distribution, no contamination |
 
-### Evidence
-- Values 1-6 correspond to 6 main jobs
-- Skill names match expected job assignments
-- Constant per skill ID across all 20 files
-- Pattern consistent across entire dataset
+### Recovered records (14 total, all verified)
+
+| ID | Name | Why previously missed |
+|---|---|---|
+| 71 | Prayer of Protection | Swallowed by garbage cascade |
+| 77 | Cleansing | Swallowed by garbage cascade |
+| 240 | Sharp Eye | Swallowed by garbage cascade |
+| 241 | Double Shot | Swallowed by garbage cascade |
+| 242 | Multi Shot | Swallowed by garbage cascade |
+| 243 | Overdrive | Swallowed by garbage cascade |
+| 244 | Running Fire | Swallowed by garbage cascade |
+| 245 | Fake | Swallowed by garbage cascade |
+| 264 | Ironblood | Swallowed by garbage cascade |
+| 308 | Warrior's Inspiration | Swallowed by garbage cascade |
+| 309 | Knight's Command | Swallowed by garbage cascade |
+| 239 | Eye Sight | UTF-8 bytes in description |
+| 263 | Unknown Skill | desc_len = 0 (empty) |
+| 307 | Royal Food | desc_len = 10 (short) |
 
 ---
 
-## 5. Skill ID Analysis
+## 3. Missing IDs (19 per file, consistent)
 
-### Statistics
+```
+16, 21, 66, 67, 70, 72, 73, 74, 75, 76, 87, 95, 97, 98, 99, 107, 225, 226, 363
+```
+
+Not parser failure — these IDs have no record data in any file (binary-verified).
+
+---
+
+## 4. Record Layout Verification
+
+```
+uint32  skill_id         ✓ (1–362, all valid)
+char[]  name             ✓ (printable ASCII, uppercase first, 3–50 chars)
+uint8[] null padding     ✓ (variable)
+uint32  fields[34–38]    ✓ (count distribution: 32×1, 34×2, 36×1, 37×9, 38×331)
+uint32  desc_len         ✓ (0–499)
+char[]  description      ✓ (ASCII/UTF-8, length = desc_len)
+uint8[] null padding     ✓ (variable)
+```
+
+Note: there is **no** skill_id copy after desc_len — the old claim was an artifact
+of contaminated parsing. field[34] is an internal index (matches skill_id only
+53/331 times); field[36] is constant 0.
+
+---
+
+## 5. Orphan Records (100 total, 5/file)
+
+All are `Rose Cross Guild Hurray!C/I/J/K/L/M` ID-24 entries embedded in
+description-block regions — placeholder/legacy data, not real skills:
+- skill01: @22365, @24033, @24249, @24465, @24681
+
+Logged and excluded from valid counts.
+
+---
+
+## 6. Skill ID Analysis
 
 | Metric | Value |
 |---|---|
-| Unique skill IDs | 333 |
-| Unique skill names | 326 |
-| ID range | 1-362 |
-| Skills in all 20 files | 333 (100%) |
+| Unique skill IDs | 344 |
+| Unique skill names | 337 |
+| ID range | 1–362 |
+| Skills in all 20 files | 344 (100%) |
 | Skills in only 1 file | 0 |
 
-### Duplicate Names
-| Name | Count | IDs |
-|---|---|---|
-| Accurate Appraisal | 2 | 352, 354 |
-| Combo Master | 3 | 163, 189, 203 |
-| Concentration | 2 | 28, 332 |
-| Enhance Bow | 2 | 262, 319 |
-| High Quality Sense | 2 | 323, 324 |
-| Reload | 2 | 254, 322 |
+### Duplicate names (6 groups)
+
+| Name | IDs |
+|---|---|
+| Accurate Appraisal | 352, 354 |
+| Combo Master | 163, 189, 203 |
+| Concentration | 28, 332 |
+| Enhance Bow | 262, 319 |
+| High Quality Sense | 323, 324 |
+| Reload | 254, 322 |
 
 ---
 
-## 6. Cross-File Pattern Analysis
+## 7. Output
 
-### Fireball (ID=18) Field Progression
-
-| File | field[18] | Pattern |
-|---|---|---|
-| 1 | 75 | Base |
-| 5 | 135 | Increasing |
-| 10 | 240 | Increasing |
-| 15 | 410 | Plateau |
-| 20 | 410 | Plateau |
-
-**Observation**: field[18] increases monotonically 1→10 then plateaus 11→20.
-This supports the hypothesis that each file represents a skill level tier.
+- CSV: `D:\SealR_Database\skill_v7_parsed.csv` (6,880 rows, 44 columns, 1.72 MB)
+- Pickle: `D:\SealR_Database\skill_v7_data.pkl`
 
 ---
 
-## 7. Known Issues
-
-1. **30 records per file not parsed** — Missing IDs
-2. **Field semantics mostly unknown** — Only job type confirmed
-3. **Float fields not decoded** — Read as uint32
-4. **No prerequisite data** — No skill-to-skill references
-
----
-
-## 8. Output
-
-- CSV: `research/skill_v7_parsed.csv` (6,660 rows)
-- This validation report
-
----
-
-## 9. Validation
+## 8. Validation
 
 | Check | Result |
 |---|---|
 | All 20 files parsed | PASS |
-| Consistent counts across files | PASS |
-| Record chain validation | PASS |
-| CSV output generated | PASS |
+| 344 + 19 = 363 exact reconciliation | PASS |
+| Consistent counts across all files | PASS |
+| All IDs in all 20 files | PASS |
+| No field-count contamination (1–17) | PASS |
+| Orphans logged separately | PASS |
+| CSV regenerated from v8 data | PASS |
