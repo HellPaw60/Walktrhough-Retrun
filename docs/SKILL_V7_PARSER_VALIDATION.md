@@ -1,148 +1,119 @@
-# Skill v7 Parser Validation Report — v8
+# Skill v7 Parser Validation Report — v9
 
 **Date:** 2026-09-26
-**Parser Version:** 8 (final)
+**Parser Version:** 9 (deterministic fixed-layout chain)
 
 ---
 
-## 1. Parser Accuracy
+## 1. Final Accuracy
 
-### Per-File Counts (exact, verified)
+### Per-File Counts (chain-verified)
 
-| File | Header Max ID | Valid Records | Orphans | Missing |
-|---|---|---|---|---|
-| skill01.edt | 363 | 344 | 5 | 19 |
-| skill02.edt | 363 | 344 | 5 | 19 |
-| skill03.edt | 363 | 344 | 5 | 19 |
-| skill04.edt | 363 | 344 | 5 | 19 |
-| skill05.edt | 363 | 344 | 5 | 19 |
-| skill06.edt | 363 | 344 | 5 | 19 |
-| skill07.edt | 363 | 344 | 5 | 19 |
-| skill08.edt | 363 | 344 | 5 | 19 |
-| skill09.edt | 363 | 344 | 5 | 19 |
-| skill10.edt | 363 | 344 | 5 | 19 |
-| skill11.edt | 363 | 344 | 5 | 19 |
-| skill12.edt | 363 | 344 | 5 | 19 |
-| skill13.edt | 363 | 344 | 5 | 19 |
-| skill14.edt | 363 | 344 | 5 | 19 |
-| skill15.edt | 363 | 344 | 5 | 19 |
-| skill16.edt | 363 | 344 | 5 | 19 |
-| skill17.edt | 363 | 344 | 5 | 19 |
-| skill18.edt | 363 | 344 | 5 | 19 |
-| skill19.edt | 363 | 344 | 5 | 19 |
-| skill20.edt | 363 | 344 | 5 | 19 |
-| **Total** | — | **6,880** | **100** | — |
+| File | Header Max ID | Chain Records | Named | Unnamed | EOF Coverage |
+|---|---|---|---|---|---|
+| skill01.edt | 363 | 362 | 344 | 18 | 109,294/109,294 exact |
+| skill02.edt | 363 | 362 | 344 | 18 | 109,294/109,294 exact |
+| skill03–20.edt | 363 | 362 | 344 | 18 | 109,295/109,295 exact |
+| **Total** | — | **7,240** | **6,880** | **360** | **20/20 files exact** |
 
-**Reconciliation: 344 valid + 19 missing = 363 = header. EXACT.**
+All files: sequential IDs 1–362, zero gaps, zero non-sequential transitions.
 
 ---
 
-## 2. Parser Bug History (why counts changed)
+## 2. The Fixed Layout (BINARY_CONFIRMED)
 
-| Version | Records/file | Bug |
+```
+offset  size  field
++0      4     skill_id (uint32)
++4      32    name (fixed 32-byte field, null-padded)
++36     152   fields (38 × uint32)
++188    4     desc_len (uint32)
++192    var   description (desc_len bytes)
+→ next record at +192+desc_len (no trailing padding)
+```
+
+**Proof:** chain parse from offset 260 walks 362 records per file and lands on
+exactly the final byte of each of the 20 files. A single misaligned record would
+desynchronize the chain and produce garbage at the next record boundary — this
+never happened, in any file.
+
+---
+
+## 3. Parser Version History (full audit trail)
+
+| Version | Records/file | Root cause of error |
 |---|---|---|
-| v2/v3 (old) | 333 | Cascade bug: garbage records (`Rose Cross Guild Hurray!C–M`, `Seal Online G`) accepted → swallowed 11 real records (71, 77, 240–245, 264, 308, 309). Over-strict desc validation rejected 3 more (239, 263, 307) |
-| v4 | 341 | Field-limit fix recovered 11 records, but lost 239, 263, 307 (UTF-8 desc, empty desc, short desc) |
-| v5/v6 | 342–344 | Relaxed desc validation recovered some, but empty-desc fallback re-introduced cascade (garbage 44-field match swallowed records again) |
-| **v8 (final)** | **344** | Inline empty-desc check (fields 36–39 + next-record validation) + field-count window 32–40 for desc matches. Clean field distribution, no contamination |
+| v2/v3 | 333 | Cascade bug: garbage in-description text (`Rose Cross Guild Hurray!C–M`, `Seal Online G`) matched record heuristics → swallowed 11 real records (71, 77, 240–245, 264, 308, 309); strict desc validation rejected 239/263/307 |
+| v4 | 341 | Recovered the 11, lost 239 (UTF-8 desc), 263 (empty desc), 307 (short desc) |
+| v5/v6 | 342–344 | Relaxed validation re-introduced cascade via 44-field garbage matches |
+| v8 | 344 | Field-count window heuristic; 13 records misparsed at wrong desc boundaries (e.g. ID 356: field[32]=1 + next byte `d` accepted as desc_len=1/desc='d'). "331/344 38-field layouts" and "19 missing IDs" were artifacts of this scan |
+| **v9** | **362** | **Fixed layout — no scanning, no heuristics. Chain-verified.** |
 
-### Recovered records (14 total, all verified)
+### Why every earlier parser undercounted
 
-| ID | Name | Why previously missed |
-|---|---|---|
-| 71 | Prayer of Protection | Swallowed by garbage cascade |
-| 77 | Cleansing | Swallowed by garbage cascade |
-| 240 | Sharp Eye | Swallowed by garbage cascade |
-| 241 | Double Shot | Swallowed by garbage cascade |
-| 242 | Multi Shot | Swallowed by garbage cascade |
-| 243 | Overdrive | Swallowed by garbage cascade |
-| 244 | Running Fire | Swallowed by garbage cascade |
-| 245 | Fake | Swallowed by garbage cascade |
-| 264 | Ironblood | Swallowed by garbage cascade |
-| 308 | Warrior's Inspiration | Swallowed by garbage cascade |
-| 309 | Knight's Command | Swallowed by garbage cascade |
-| 239 | Eye Sight | UTF-8 bytes in description |
-| 263 | Unknown Skill | desc_len = 0 (empty) |
-| 307 | Royal Food | desc_len = 10 (short) |
+All prior versions required a **non-empty, printable name** to even attempt a
+record match. The 18 unnamed records (empty 32-byte name field) were invisible
+to them — and several cascade/mismatch bugs traced back to the scanner jumping
+*through* those empty-name regions. The fixed layout has no such blind spot.
 
 ---
 
-## 3. Missing IDs (19 per file, consistent)
+## 4. The 18 Unnamed Records (recovered by v9)
 
-```
-16, 21, 66, 67, 70, 72, 73, 74, 75, 76, 87, 95, 97, 98, 99, 107, 225, 226, 363
-```
+| ID | desc_len | Description | Note |
+|---|---|---|---|
+| 16 | 81 | Box Viewer (Indonesian) | Server-custom |
+| 21 | 62 | Drop Viewer (Indonesian) | Server-custom |
+| 66 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 67 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 70 | 13 | Seal Online | Placeholder |
+| 72 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 73 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 74 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 75 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 76 | 24 | Rose Cross Guild Hurray! | Placeholder |
+| 87 | 164 | mining skill | Unnamed real skill |
+| 95 | 107 | guardian production | Unnamed real skill |
+| 97 | 116 | disintegrate items | Unnamed real skill |
+| 98 | 163 | atom registration | Unnamed real skill |
+| 99 | 149 | spirit extraction | Unnamed real skill |
+| 107 | 199 | monster mimic | Unnamed real skill |
+| 225 | 0 | (empty) | Deleted slot |
+| 226 | 0 | (empty) | Deleted slot |
 
-Not parser failure — these IDs have no record data in any file (binary-verified).
-
----
-
-## 4. Record Layout Verification
-
-```
-uint32  skill_id         ✓ (1–362, all valid)
-char[]  name             ✓ (printable ASCII, uppercase first, 3–50 chars)
-uint8[] null padding     ✓ (variable)
-uint32  fields[34–38]    ✓ (count distribution: 32×1, 34×2, 36×1, 37×9, 38×331)
-uint32  desc_len         ✓ (0–499)
-char[]  description      ✓ (ASCII/UTF-8, length = desc_len)
-uint8[] null padding     ✓ (variable)
-```
-
-Note: there is **no** skill_id copy after desc_len — the old claim was an artifact
-of contaminated parsing. field[34] is an internal index (matches skill_id only
-53/331 times); field[36] is constant 0.
-
----
-
-## 5. Orphan Records (100 total, 5/file)
-
-All are `Rose Cross Guild Hurray!C/I/J/K/L/M` ID-24 entries embedded in
-description-block regions — placeholder/legacy data, not real skills:
-- skill01: @22365, @24033, @24249, @24465, @24681
-
-Logged and excluded from valid counts.
+All have field[0] = 0xFFFFFFFF. Field blocks are structurally valid 38×uint32.
 
 ---
 
-## 6. Skill ID Analysis
+## 5. Field Statistics (denominator = 362, all records)
 
-| Metric | Value |
+| Statistic | Result |
 |---|---|
-| Unique skill IDs | 344 |
-| Unique skill names | 337 |
-| ID range | 1–362 |
-| Skills in all 20 files | 344 (100%) |
-| Skills in only 1 file | 0 |
+| field[34] == skill_id | 65/362 (offset drift -4/-5/-7 ⇒ internal index, not ID copy) |
+| field[36] == 0 | 362/362 |
+| field[37] == 0 | 360/362 (exceptions: 350, 150) |
+| field[17] ∈ {0,1} | 360/362 (exceptions: 10, 2) |
+| All records 38 fields | 362/362 |
 
-### Duplicate names (6 groups)
-
-| Name | IDs |
-|---|---|
-| Accurate Appraisal | 352, 354 |
-| Combo Master | 163, 189, 203 |
-| Concentration | 28, 332 |
-| Enhance Bow | 262, 319 |
-| High Quality Sense | 323, 324 |
-| Reload | 254, 322 |
+Denominator note: earlier reports used 331 (v8's accidental 38-field subset).
+Correct denominator is **362** — every record has every field.
 
 ---
 
-## 7. Output
+## 6. Output
 
-- CSV: `D:\SealR_Database\skill_v7_parsed.csv` (6,880 rows, 44 columns, 1.72 MB)
-- Pickle: `D:\SealR_Database\skill_v7_data.pkl`
+- CSV: `D:\SealR_Database\skill_v7_parsed.csv` (7,240 rows, 44 columns, 1,796,615 bytes)
+- Pickle: `D:\SealR_Database\skill_v9_data.pkl`
 
 ---
 
-## 8. Validation
+## 7. Validation
 
 | Check | Result |
 |---|---|
-| All 20 files parsed | PASS |
-| 344 + 19 = 363 exact reconciliation | PASS |
-| Consistent counts across all files | PASS |
-| All IDs in all 20 files | PASS |
-| No field-count contamination (1–17) | PASS |
-| Orphans logged separately | PASS |
-| CSV regenerated from v8 data | PASS |
+| Chain parse exact EOF, 20/20 files | PASS |
+| Sequential IDs 1–362, zero gaps | PASS |
+| 344 named + 18 unnamed = 362 | PASS |
+| Fixed 38-field layout for all records | PASS |
+| CSV regenerated from v9 chain data | PASS |
+| No raw client artifacts published | PASS |

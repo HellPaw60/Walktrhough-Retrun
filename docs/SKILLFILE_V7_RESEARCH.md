@@ -1,277 +1,196 @@
-# SkillFile v7 Reverse Engineering Research — Final v2
+# SkillFile v7 Reverse Engineering Research — Final v3
 
 **Date:** 2026-09-26
-**Status:** Complete — corrected after full re-audit
-**Parser:** v8 (final)
+**Status:** Complete — fixed-layout model verified by exhaustive chain parse
+**Parser:** v9 (deterministic fixed-layout chain)
 
 ---
 
 ## 1. Executive Summary
 
-### Key Numbers (corrected)
+### Key Numbers (final, chain-verified)
 
-| Metric | Old (wrong) | Final (verified) |
+| Metric | Value | Evidence |
 |---|---|---|
-| Files | 20 | 20 |
-| Header max ID | 363 | 363 |
-| Valid records per file | 333 | **344** |
-| Total valid records | 6,660 | **6,880** |
-| Unique skill IDs | 333 | **344** |
-| Unique skill names | 326 | **337** |
-| Missing IDs | 30 | **19** |
-| Duplicate names | 6 pairs | **6 groups** (Concentration ×2, Combo Master ×3, Reload ×2, Enhance Bow ×2, High Quality Sense ×2, Accurate Appraisal ×2) |
+| Files | 20 (`skill01.edt` – `skill20.edt`) | — |
+| Header max skill ID | 363 | uint16 @ offset 64 |
+| **Records per file** | **362** | Chain parse reaches exact EOF in all 20 files |
+| **Total records** | **7,240** (362 × 20) | — |
+| Named skills | 344 | Non-empty 32-byte name field |
+| Unnamed records | 18 | Empty name field (placeholders/custom) |
+| Absent IDs | 1 (ID 363) | Header value itself; records run 1–362 |
+| Unique skill names (named) | 337 | 6 duplicate name groups |
 
 ### Reconciliation (exact)
 
 ```
 363 = header max skill ID (capacity)
-344 = valid records per file (parser v8)
- 19 = missing IDs (no data in any file)
+362 = records per file — sequential IDs 1..362, ZERO gaps, chain-verified
+344 = named skills (non-empty name)
+ 18 = unnamed records (empty name field)
 ---
-363 = 344 + 19  ✓ EXACT
+362 = 344 + 18  ✓ EXACT
+363 = 362 + 1 (ID 363 itself absent)  ✓ EXACT
 ```
 
-### Why the old count (333) was wrong
+### Record layout is FIXED — not variable
 
-The old parser (v2/v3) had a **cascade bug**: garbage records inside description
-blocks (e.g. `Rose Cross Guild Hurray!C/I/J/K/L/M` at offsets 22365-24925, and
-`Seal Online  G`) were accepted as records. When such a garbage record matched,
-the parser jumped past the region and **swallowed 11 real records**:
-IDs 71, 77, 240, 241, 242, 243, 244, 245, 264, 308, 309.
+Every record in every file follows one fixed layout (BINARY_CONFIRMED):
 
-Additionally, 3 records with edge-case descriptions were rejected by over-strict
-validation:
-- ID 239 `Eye Sight` — description contains UTF-8 bytes (`C3 AD C2 BB`)
-- ID 263 `Unknown Skill` — desc_len = 0 (empty description)
-- ID 307 `Royal Food` — desc_len = 10 (below old threshold of 20)
+```
+uint32  skill_id          (sequential 1..362)
+char[32] name             (fixed 32-byte field, null-padded; empty = unnamed)
+uint32  fields[38]        (fixed 38 × uint32)
+uint32  desc_len          (0–499)
+char[]  description       (desc_len bytes)
+→ next record immediately (no trailing padding)
+record_size = 192 + desc_len
+```
 
-All 14 recovered records verified: valid 38-field structure, complete descriptions.
-
----
-
-## 2. File Inventory
-
-| File | Size (bytes) | Valid Records | Orphans |
-|---|---|---|---|
-| skill01.edt | 109,294 | 344 | 5 |
-| skill02.edt | 109,294 | 344 | 5 |
-| skill03.edt | 109,295 | 344 | 5 |
-| skill04.edt | 109,295 | 344 | 5 |
-| skill05.edt | 109,295 | 344 | 5 |
-| skill06.edt | 109,295 | 344 | 5 |
-| skill07.edt | 109,295 | 344 | 5 |
-| skill08.edt | 109,295 | 344 | 5 |
-| skill09.edt | 109,295 | 344 | 5 |
-| skill10.edt | 109,295 | 344 | 5 |
-| skill11.edt | 109,295 | 344 | 5 |
-| skill12.edt | 109,295 | 344 | 5 |
-| skill13.edt | 109,295 | 344 | 5 |
-| skill14.edt | 109,295 | 344 | 5 |
-| skill15.edt | 109,295 | 344 | 5 |
-| skill16.edt | 109,295 | 344 | 5 |
-| skill17.edt | 109,295 | 344 | 5 |
-| skill18.edt | 109,295 | 344 | 5 |
-| skill19.edt | 109,295 | 344 | 5 |
-| skill20.edt | 109,295 | 344 | 5 |
-| **Total** | **~2.1 MB** | **6,880** | **100** |
-
-All 20 files contain the **same 344 skill IDs** (verified: every ID appears in all 20 files).
+Chain parse from offset 260 walks 362 records and lands on **exactly** the last
+byte of each file (109,294 / 109,295 bytes). 20/20 files. Zero non-sequential
+ID transitions. This is structural proof — no heuristics involved.
 
 ---
 
-## 3. Codec
+## 2. Historical Number Audit (what each number was)
 
-- Type: byte-by-byte XOR with Linear Congruential Generator (LCG)
-- Seed: `0x11CFD`, Multiplier: `52845`, Addend: `22719`, Mask: `0xFFFF`
-- Same codec as other EDT files in this client (validated).
-
----
-
-## 4. Record Layout (BINARY_CONFIRMED)
-
-### Header
-```
-+0      24      "Seal Online SkillFile v7"
-+24     40      null padding
-+64     2       max_skill_id (uint16) = 363
-+66     6       null padding
-+72     5       "skill"
-+77     183     null padding
-+260    —       first record
-```
-
-### Record Structure
-```
-uint32  skill_id          (1–362)
-char[]  name              (null-terminated ASCII, uppercase first char, 3–50 chars)
-uint8[] null padding
-uint32  fields[34–38]     (see Field Map)
-uint32  desc_len          (0–499; 0 = empty description)
-char[]  description       (desc_len bytes; may contain UTF-8)
-uint8[] null padding
-```
-
-Records are variable length. Field count distribution (skill01): 32×1, 34×2, 36×1, 37×9, 38×331.
-
----
-
-## 5. Missing IDs (19, BINARY_CONFIRMED)
-
-```
-16, 21, 66, 67, 70, 72, 73, 74, 75, 76, 87, 95, 97, 98, 99, 107, 225, 226, 363
-```
-
-These IDs have no record data in any of the 20 files. Consistent across all files.
-Likely reserved/deleted skill slots. `363` = header max ID itself (not a real slot).
-
----
-
-## 6. Field Map (corrected)
-
-### Confirmed fields
-
-| Index | Type | Semantic | Confidence |
-|---|---|---|---|
-| field[0] | uint32 | Skill category / class-group ID | `BINARY_CONFIRMED` (as ID; see §7 for semantics) |
-| field[15] | float32 | Effect multiplier A (0.4, 1.2, -0.7 …) | `PROBABLE` |
-| field[16] | float32 | Effect multiplier B (1.0, 6.0, 3.0 …) | `PROBABLE` |
-| field[18] | uint32 | Power/damage/heal value (75, 410, 600, 2500 …) | `PROBABLE` |
-| field[34] | uint32 | Internal skill index (NOT skill_id copy — only 53/331 match) | `BINARY_CONFIRMED` (as index; semantics UNRESOLVED) |
-| field[36] | uint32 | 0 for all records (331/331) | `BINARY_CONFIRMED` (constant) |
-| desc_len | uint32 | description byte length | `BINARY_CONFIRMED` |
-
-### Corrected claims (old → new)
-
-| Old claim | Status | Correction |
+| Number | What it actually was | Status |
 |---|---|---|
-| field[0] = job type, 1–6 = 6 main jobs, `BINARY_CONFIRMED` | **DOWNGRADED** | field[0] has 26 distinct values (1–31, 131, 231, 0xFFFFFFFF). Values 1–6 correlate with base-job skill groups, but 7–31 exist (Hunter/Gunner/Scout/Chef/etc. sub-classes). Job mapping = `PROBABLE` |
-| field[5] = SP cost | **DOWNGRADED** | No consumer evidence. `UNRESOLVED` |
-| field[8] = min level | **DOWNGRADED** | field[8] is 0 for 329/331 records. `UNRESOLVED` |
-| field[17] = damage | **CORRECTED** | field[17] is a small binary flag (0/1) for most records. The damage-like values live in **field[18]**. Old claim was shifted by contaminated data |
-| field[N-2] = desc_len, field[N-1] = skill_id copy | **CORRECTED** | In the 38-field layout: desc_len sits after field[37]; field[36] is all zeros; field[34] is an internal index, not skill_id |
-
-### Unresolved fields
-
-field[1]–[14], field[17], field[19]–[33], field[35], field[37] → `UNRESOLVED`
+| 333 | v2/v3 parser: cascade bug (garbage `Rose Cross Guild Hurray!` matches swallowed 11 real records) + over-strict desc validation rejected 3 more | **Artifact** |
+| 341 / 342 / 344 | v4–v8 parsers: variable-layout assumption; each version recovered different subsets. 344 = records with non-empty names that v8 could parse | **Subset, superseded** |
+| **331** | v8's count of records that *happened* to parse as "38 fields" under the flawed variable-length scan. In reality ALL 362 records have exactly 38 fields | **Artifact** — see §6 |
+| 362 (subagent) | Structural scan that counted garbage entries — coincidentally equals the true count because the true count IS 362 | Right number, wrong method |
+| **362 (v9)** | Fixed-layout chain parse, sequential IDs, exact EOF coverage | **FINAL — verified** |
+| 30 / 19 missing | v2/v3 and v8 parser failures. True absent IDs: only 363 | **Artifacts** |
+| 6,660 / 6,880 | 333×20 / 344×20 — products of parser artifacts | **Superseded by 7,240** |
 
 ---
 
-## 7. Job/Category Field (field[0]) — full distribution
+## 3. The 18 Unnamed Records (empty name field)
 
-| Value | Count | Sample skills | Interpretation |
-|---|---|---|---|
-| 1 | 18 | Great Sword Combo, Quick Slash, Double Slash | Warrior base |
-| 2 | 18 | Sword Combo, Chivalry, Holy Cross | Knight base |
-| 3 | 17 | Knife Combo, Merriment, Playing Dead | Jester base |
-| 4 | 25 | Staff Combo, Fireball, Meteor | Mage base |
-| 5 | 27 | Mace Combo, Prayer, Cure | Priest base |
-| 6 | 20 | Hammer Combo, Cook, Collect | Craftsman base |
-| 7 | 3 | Bless, Throw Bomb, Alchemy | Unknown group |
-| 8 | 3 | Intimidate, Warm Up, Beg | Unknown group |
-| 9 | 18 | Slingshot Combo, Simple Shot, Power Shot | Hunter/gunner |
-| 11 | 10 | Dominate, Awakening, Instinct | Unknown group |
-| 12 | 10 | Break Weapon, Frenzy, Vengeance | Unknown group |
-| 13 | 11 | Sudden Attack, Sneakattack, Doppelganger | Unknown group |
-| 14 | 9 | Ice Cannon, Glacier, Time Warp | Unknown group |
-| 15 | 10 | Repentance, Judgement, Prediction | Unknown group |
-| 16 | 11 | Coup de Grace, Time Bomb, Demolish | Unknown group |
-| 19 | 10 | Piercing Arrow, Bump Arrow, Poison Arrow | Archer |
-| 21 | 10 | Sword Dance, Charge, Radiant Sword | Unknown group |
-| 22 | 9 | Tornado, Heal, Divine Guard | Unknown group |
-| 23 | 11 | All In, Black Jack, Bluff | Unknown group |
-| 24 | 9 | Giga Flame, Inferno, Hellfire | Unknown group |
-| 25 | 13 | Mega Cure, Bulwark, Faith | Unknown group |
-| 26 | 8 | Hammer Master, Master Refiner | Unknown group |
-| 29 | 13 | Aimed Shot, Kill Shot, Headshot | Gunner |
-| 31 | 18 | Poke Combo, Table Manner, Absolute Taste | Chef |
-| 131 | 8 | Last Supper, Food Lane, Onion Slicer | Chef advanced |
-| 231 | 9 | Binge, Diet, Eat Fast | Chef advanced |
-| 0xFFFFFFFF | 3 | Seal Online, Unknown Skill, Royal Food | Special/sentinel |
-
-**Status:** field[0] as a numeric field = `BINARY_CONFIRMED`. Mapping value→job name = `PROBABLE`
-for 1–6 (base jobs, name-correlation only), `UNRESOLVED` for 7–31, 131, 231.
-
----
-
-## 8. Variant Analysis (verified on clean data)
-
-### Hypothesis testing
-
-| Hypothesis | Verdict | Evidence |
+| IDs | Description content | Interpretation |
 |---|---|---|
-| A: skill01–20 = skill level/rank data | `PROBABLE` | 323/344 skills change at least one field across files; power fields scale up then plateau |
-| B: server config tiers | Weak | Same structure, no config markers |
-| C: client/platform variants | Rejected | No platform differences |
-| D: language variants | Rejected | All text identical English |
-| E: unrelated duplicates | Rejected | Systematic value progression |
+| 16 | `Box Viewer, Untuk Melihat Isi Dalam BOX...` (Indonesian) | Server-custom skill (Seal Return addition) |
+| 21 | `Drop Viewer. Untuk Melihat Dropan Monster...` (Indonesian) | Server-custom skill |
+| 66, 67, 72–76 | `Rose Cross Guild Hurray!` | Guild-skill placeholder block |
+| 70 | `Seal Online` | Placeholder |
+| 87 | mining skill desc | Real skill, unnamed in this client |
+| 95, 97–99, 107 | guardian/disintegrate/atoms/spirits/mimic descs | Real skills, unnamed in this client |
+| 225, 226 | (fully empty, desc_len=0) | Deleted/unused slots |
 
-### Cross-file progression (clean data)
+All 18 have `field[0] = 0xFFFFFFFF` (sentinel category). Field data is structurally
+valid. They are **not** parser failures — they are genuine records with empty name
+fields.
 
-**Fireball (ID 18):**
+---
 
-| File | f4 | f9 | f18 (power) |
-|---|---|---|---|
-| skill01 | 10 | 15 | 75 |
-| skill05 | 10 | 19 | 135 |
-| skill10 | 10 | 24 | 240 |
-| skill11 | 10 | 24 | 410 |
-| skill15 | 10 | 24 | 410 |
-| skill20 | 10 | 24 | 410 |
+## 4. Field Map (final, all 362 records)
 
-**Double Slash (ID 31):** f18: 600 → 744 → 1625 → 770 (plateau)
-**Heal (ID 155):** f9: 210 → 260 → 330 (plateau); f18: 2500 → 15000 → 0
-**Sleep (ID 1):** identical across all 20 files (utility skill, no scaling)
+| Index | Type | Observed | Meaning | Confidence |
+|---|---|---|---|---|
+| field[0] | uint32 | 0, 1–31, 131, 231, 0xFFFFFFFF | Category/class-group ID. 0 = basic utility (Sleep, Trade, Fishing, Party, Inventory…); 0xFFFFFFFF = special/unnamed (21 records); 1–6 = base job groups | Numeric field `BINARY_CONFIRMED`; job-name mapping `PROBABLE` |
+| field[15] | float32 | 0.0, 0.5, 1.0, 0.7, 1800.0 … | Effect multiplier A | `PROBABLE` |
+| field[16] | float32 | 0.0, 3.0, 1.0, 6.0, 5.0 … | Effect multiplier B | `PROBABLE` |
+| field[17] | uint32 | 0 (185), 1 (175), 10 (1), 2 (1) | Binary flag | `BINARY_CONFIRMED` (flag; semantics UNRESOLVED) |
+| field[18] | uint32 | 0–15000 range | Power/damage/heal candidate | `PROBABLE` |
+| field[34] | uint32 | see §5 | Internal skill index (NOT skill_id copy) | `BINARY_CONFIRMED` (index; see §5) |
+| field[36] | uint32 | 0 in 362/362 | Constant zero | `BINARY_CONFIRMED` |
+| field[37] | uint32 | 0 in 360/362; 350, 150 | Mostly zero | `UNRESOLVED` |
+| desc_len | uint32 | 0–499 | Description byte length | `BINARY_CONFIRMED` |
 
-### Statistical summary (344 skills)
+All other fields (1–14, 19–33, 35) → `UNRESOLVED`.
 
-| Metric | Count |
+---
+
+## 5. field[34] — Internal Index (verified on all 362 records)
+
+```
+field[34] == skill_id exactly:        65/362
+field[34] - skill_id == -4:         118/362
+field[34] - skill_id == -5:          98/362
+field[34] - skill_id == -7:          37/362
+field[34] - skill_id == 0:           65/362
+(other small offsets: remainder)
+```
+
+The offset drifts in steps (-4, -5, -7 …) as skill_id grows — consistent with an
+index into a compacted/original skill table that skips certain entries. It is
+**not** a skill_id duplicate. Denominator is **362** (all records).
+
+---
+
+## 6. What "331" Was (explicit resolution)
+
+The v8 parser assumed variable-length records and scanned for description
+boundaries heuristically. Under that scan:
+
+- 331 records happened to yield a "38-field" parse
+- 13 records misparsed as 32/34/36/37-field layouts
+- The misparses were caused by field values that coincidentally satisfied the
+  desc-length heuristic (e.g. ID 356 `Triple Arrow`: field[32]=1 followed by
+  byte `d` (0x64) was accepted as "desc_len=1, desc='d'")
+
+With the v9 fixed-layout model, **all 362 records parse as exactly 38 fields**
+— the 32/34/36/37 "layouts" never existed. Previous statements like
+"field[36] = 0 in 331/331" are corrected to "field[36] = 0 in 362/362".
+
+---
+
+## 7. Variant Analysis (final numbers)
+
+| Metric | Count (of 362) |
 |---|---|
-| field[18] changes across files | 255 |
-| field[9] changes across files | 217 |
-| field[4] changes across files | 0 (constant) |
-| ANY field changes | 323 |
-| Fully constant skills | 21 |
+| Records with any field change across 20 files | 330 |
+| Constant records (named) | 21 (e.g. Sleep) |
+| Constant records (unnamed) | 11 |
 
-### Conclusion
+**Fireball (ID 18):** field[18] power 75 → 135 → 240 (files 01→10), jump to 410
+at file 11, plateau to file 20. field[9]: 15 → 24.
 
-skill01–skill20 = **skill level/rank variants** — `PROBABLE`.
-Power/requirement fields increase from file 01→10, then plateau at 11–20
-(consistent with a mastery-tier cap). No loader/consumer found, so not
-`BINARY_CONFIRMED`.
+Conclusion unchanged: **skill01–skill20 = skill level/rank variants — `PROBABLE`**
+(330/362 records change; systematic progression + plateau; no loader found).
 
 ---
 
-## 9. Orphan Records (100 total)
+## 8. field[0] Category Distribution (final, 362 records)
 
-5 per file. All are ID-24 `Rose Cross Guild Hurray!C/I/J/K/L/M` entries embedded
-inside the description block region of other skills — placeholder/legacy data,
-not real skill records. Logged, excluded from the 344.
-
----
-
-## 10. Consumer/Runtime Research
-
-**NOT FOUND.** No v7 loader, no `skill%02d` format string, no skill manager
-reference found in client executable. Variant semantics remain `PROBABLE`.
-
----
-
-## 11. Outputs
-
-- CSV: `D:\SealR_Database\skill_v7_parsed.csv` (6,880 rows, 1.72 MB, 44 columns)
-- Parser data: `D:\SealR_Database\skill_v7_data.pkl`
-- This report + `SKILL_V7_PARSER_VALIDATION.md` + `SKILL_V7_VARIANT_ANALYSIS.md`
+| Value | Count | Sample | Interpretation |
+|---|---|---|---|
+| 0 | 12 | Sleep, Trade, Fishing, Refine, Party, Inventory, Emoticon, Seller's/Buyer's Kiosk, Duel Request | Basic/utility (all players) |
+| 1 | 18 | Great Sword Combo, Quick Slash | Warrior group |
+| 2 | 18 | Sword Combo, Chivalry | Knight group |
+| 3 | 17 | Knife Combo, Merriment | Jester group |
+| 4 | 25 | Staff Combo, Fireball | Mage group |
+| 5 | 27 | Mace Combo, Prayer | Priest group |
+| 6 | 20 | Hammer Combo, Cook | Craftsman group |
+| 7–31, 131, 231 | ~200 | Hunter/Gunner/Archer/Chef/advanced groups | Sub-class groups (`UNRESOLVED` names) |
+| 0xFFFFFFFF | 21 | 18 unnamed + Seal Online, Unknown Skill, Royal Food | Special/sentinel |
 
 ---
 
-## 12. Validation
+## 9. Consumer/Runtime Research
+
+**NOT FOUND.** No v7 loader or `skill%02d` format string in client executable.
+Variant semantics remain `PROBABLE`.
+
+---
+
+## 10. Outputs
+
+- CSV: `D:\SealR_Database\skill_v7_parsed.csv` (7,240 rows, 44 columns, 1.8 MB)
+- Parser data: `D:\SealR_Database\skill_v9_data.pkl`
+
+---
+
+## 11. Validation
 
 | Check | Result |
 |---|---|
-| All 20 files parsed | PASS |
-| 344 + 19 = 363 reconciliation | PASS |
-| All IDs present in all 20 files | PASS |
-| Recovered 14 records verified | PASS (IDs 71, 77, 239, 240–245, 264, 263, 307, 308, 309) |
-| Field count distribution clean | PASS (34–38, no 1–17 contamination) |
+| Chain parse reaches exact EOF | PASS (20/20 files) |
+| Sequential IDs 1–362, zero gaps | PASS |
+| 344 named + 18 unnamed = 362 | PASS |
+| All records fixed 38-field layout | PASS |
+| field[36] = 0 in 362/362 | PASS |
 | No raw client artifacts published | PASS |
 | Canonical DB unchanged | PASS |
