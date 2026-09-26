@@ -89,7 +89,7 @@ fields.
 
 | Index | Type | Observed | Meaning | Confidence |
 |---|---|---|---|---|
-| field[0] | uint32 | 0, 1–31, 131, 231, 0xFFFFFFFF | Category/class-group ID. 0 = basic utility (Sleep, Trade, Fishing, Party, Inventory…); 0xFFFFFFFF = special/unnamed (21 records); 1–6 = base job groups | Numeric field `BINARY_CONFIRMED`; job-name mapping `PROBABLE` |
+| field[0] | uint32 | 0, 1–31, 131, 231, 0xFFFFFFFF | Category/class-group ID. 0 = basic utility (Sleep, Trade, Fishing, Party, Inventory…); 0xFFFFFFFF = special/sentinel category (21 records: 18 unnamed + 3 named special records — Seal Online, Unknown Skill, Royal Food); 1–6 = base job groups | Numeric field `BINARY_CONFIRMED`; job-name mapping `PROBABLE` |
 | field[15] | float32 | 0.0, 0.5, 1.0, 0.7, 1800.0 … | Effect multiplier A | `PROBABLE` |
 | field[16] | float32 | 0.0, 3.0, 1.0, 6.0, 5.0 … | Effect multiplier B | `PROBABLE` |
 | field[17] | uint32 | 0 (185), 1 (175), 10 (1), 2 (1) | Binary flag | `BINARY_CONFIRMED` (flag; semantics UNRESOLVED) |
