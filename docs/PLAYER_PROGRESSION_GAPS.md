@@ -28,7 +28,7 @@
 - NPC placement: `CLIENT_FACT` — 1,300 entries across 98 maps
 - NPC names: `PROBABLE` — 293 resolved, 1,635 unresolved
 - Skills binary dataset: AVAILABLE — 7,240 records (362/file × 20 files; 344 named + 18 unnamed), fixed 38-field layout, chain-verified
-- Skills semantic dataset: AVAILABLE with evidence levels — field[23]/field[27] buff joins `BINARY_CONFIRMED`; prereq/element/projectile/variant mapping `PROBABLE` (cross-build v8 schema). See `SKILL_V7_SEMANTIC_RESEARCH.md`
+- Skills semantic dataset: AVAILABLE with evidence levels — field[23]/field[27]/field[30]/field[31]/field[37] buff joins `BINARY_CONFIRMED`; prereq/element/projectile/variant mapping `PROBABLE` (cross-build v8 schema). See `SKILL_V7_SEMANTIC_RESEARCH.md`
 - Drop tables: `BINARY_CONFIRMED` — client drop tables ditemukan (drop_1/2/3.edt, 11,982 rows total); monster→item mapping tersedia
 - DropRate: rate values `BINARY_CONFIRMED` di drop files; roll semantics `PROBABLE`
 

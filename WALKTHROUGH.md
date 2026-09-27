@@ -359,7 +359,7 @@ Status (dengan evidence level):
 - max skill level (field[4]) — `PROBABLE`
 - minimum level requirements (field[6]) — `PROBABLE`
 - skill point values (field[5]) — `PROBABLE`
-- buff links field[23]/field[27] → buff.edt — `BINARY_CONFIRMED` cross-table joins
+- buff links field[23], field[27], field[30], field[31], dan field[37] → buff.edt — terverifikasi melalui cross-table join, `BINARY_CONFIRMED`
 
 Detail lengkap: `docs/SKILL_V7_SEMANTIC_RESEARCH.md`
 
@@ -584,8 +584,8 @@ Player-facing build/recommendation belum dibuat. Walkthrough saat ini menampilka
 | Quest chain | `UNRESOLVED` | No flag transition logic found in binary |
 | Quest → NPC semantic | `PROBABLE` | Multi-layer corroboration (text + dialog + location); runtime consumer not found — not used as absolute fact in walkthrough |
 | Quest → Monster | `UNRESOLVED` | No exact reference in quest.edt binary |
-| Drop table | `UNRESOLVED` | `drop.py` schema exists, no actual file in client |
-| DropRate | `DEFERRED` | Not investigated |
+| Drop table | `BINARY_CONFIRMED` — RESOLVED | Client drop tables ditemukan: `minimap/drop_1/2/3.edt` (lihat `docs/GAP_RESOLUTION_RESEARCH.md`) |
+| DropRate | values `BINARY_CONFIRMED` / semantics `PROBABLE` | Rate terbaca di drop files (per-million cumulative); runtime roll semantics belum terkonfirmasi |
 | Map connection | `UNRESOLVED` | No teleporter/warp data in binary |
 | Quest objective | `UNRESOLVED` | action_id semantics partial |
 | Skill binary structure | COMPLETE | 362 records/file × 20 files; fixed 38-field layout; chain parse exact EOF 20/20 |
