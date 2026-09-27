@@ -14,6 +14,8 @@
 | D — GitHub Sync | COMPLETE |
 | Skill v7 binary parsing | COMPLETE |
 | Skill v7 semantic research | COMPLETE |
+| Gap resolution sprint | COMPLETE |
+| Drop data integration | COMPLETE |
 
 ## Walkthrough Coverage
 

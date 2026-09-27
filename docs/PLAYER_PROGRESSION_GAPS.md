@@ -5,6 +5,7 @@
 | Area | Detail |
 |---|---|
 | Skill tree integration | Prerequisite graph + representative chains integrated into WALKTHROUGH.md |
+| Drop data integration | Client drop tables integrated into WALKTHROUGH.md as Notable Drops per level band |
 
 ## NOT YET BUILT
 

@@ -26,6 +26,20 @@ Belajar dasar, hunting monster lewat, kumpulin equipment pertama.
 | L8 | Rascal Rabbit | 1, 18, 24 |
 | L9 | Servant Mushroom | 17, 24 |
 
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Piya | Piya's Unfertilized Egg, Large Geranium, Pea Shell, Chicken Feather, Pink Diamond |
+| Flora | Pink Piya's Egg, Blue Dye, Lignite, Ion Stone Manual, Large Geranium |
+| Beanie | Pea, Soy Milk, White Glove, Kidney Bean, Pea Shell |
+| Moo Moo | Stem of Radish, White Glove, Anthracite, Fiber Optics, Large Geranium |
+| Rascal Rabbit | Rabbit Fur, Green Seed, Dust Bomb, Laxative Bomb, Bituminous Coal |
+| Servant Mushroom | Spore, Production Manual(WW)1, Production Manual(KW)1, Green Seed, Bituminous Coal |
+
+
 ### Equipment
 | Level | Item | Slot |
 |---|---|---|
@@ -70,6 +84,23 @@ Job change pertama (L10, dari gameplay), map baru, quest exp.
 | 16 | Giant Rascal Rabbit | 4, 24 |
 | 16 | Knight Piya | 10, 12 |
 | 18 | Wood Golem | 17, 31 |
+
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Moo Moo the Great | Production Manual(MW)1, Production Manual(CW)1, Green Seed, Dust Bomb |
+| Red Plumber | Production Manual(KD)1, Production Manual(WD)1, Production Manual(MD)1 |
+| Queen Mushroom | 1000 Year-Old Mushroom, Black Sap, Production Manual(CD)1, Spore |
+| Afro Tree | Leaf, Rotten Leaf, Carbon, Hydrogen, Oxygen |
+| Mage Piya | Piya's Unfertilized Egg, Production Manual(Accessory)28, Anthracite |
+| Cleric Piya | Piya's Unfertilized Egg, Mysterious Crystal, Production Manual(KD)2 |
+| Giant Rascal Rabbit | Wit, Tooth, Liver, Production Manual(Accessory)4 |
+| Knight Piya | Piya's Unfertilized Egg, Platinum, Production Manual(CD)2 |
+| Wood Golem | Production Manual(Accessory)19, Mysterious Crystal, Dust Bomb Manual(40) |
+
 
 ### Equipment
 | Level | Item | Slot |
@@ -131,6 +162,21 @@ Equip upgrade, map challenge pertama, perluas hunting ground.
 | 28 | Mage Piya | 10, 12 |
 | 29 | Cleric Piya | 10, 12 |
 
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Nixie | Crystal of Nixie, Crystal of Star, Starfish, Nixie's Scale, Pink Piya's Egg |
+| Windy | Rice Powder, Solarstone, Production Manual(KD)3 |
+| Silky Joe the Boxer | Mulberry Leaf, Faded Wood, Pink Piya's Egg, Production Manual(Accessory)2 |
+| Warrior Piya | Bowl, Rice Powder, Dust Bomb Manual(60), Pink Piya's Egg |
+| Happy Bah Bah | Shiny Thread, Production Manual(CD)3, Faded Wood, Pink Piya's Egg |
+| Joe the Kick Boxer | Hot Blood, Compression Bandage, White Ash, Production Manual(Accessory)11 |
+| Blue Plumber | Blue Dye, Really Hard Shell, Production Manual(Accessory)17, Faded Wood |
+
+
 ### Equipment
 | Level | Item | Slot |
 |---|---|---|
@@ -170,6 +216,20 @@ Dungeon pertama (Crude Dungeon), grinding efisien, equipment upgrade signifikan.
 | 36 | Warrior Piya | 10, 12 |
 | 39 | Abyss | 61, 62 |
 
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Pumpkeener | Vine, Really Hard Shell, Production Manual(KW)3, Platinum |
+| Gloomy Humbug | Shiny Thread, Dust Bomb Manual(80), Production Manual(Accessory)26, Pink Piya's Egg |
+| Mama Bear | Motherly Devotion, Mother's Heart, Bear's Gall, Bear's Letter |
+| Skullo | Blue Crystal, Heavy Metal, Bone, Baldea's Letter, Production Manual(WD)8 |
+| Tarantula | Spider's Poison, Dust Bomb Manual(100) |
+| Abyss | Heavy Metal, Blue Blaze, Abyss' Letter, Eye of Sword |
+
+
 ### Equipment
 | Level | Item | Slot |
 |---|---|---|
@@ -206,6 +266,21 @@ High monster, map menengah-atas, equipment yang lebih kuat.
 | 45 | Pumpisto | 66 |
 | 47 | Forest Ogre | 9, 15, 16 |
 | 48 | Tarantula Ben | 62 |
+
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Rascal Rabbit(C) | Rascal Rabbit's Locked Worn Jewel Box, Rascal Rabbit's Locked Flimsy Jewel Box, Rascal Rabbit's Locked Plain Jewel Box |
+| Head of Dullahan | Titanium, Dullahan's Tear, Ceramic |
+| Ghost Mage | Illuminating Crystal, Albereo's Letter, Production Manual(CD)5 |
+| Ghost Knight | Titanium, Ceramic, Albereo's Letter, Production Manual(CD)6 |
+| Pumpisto | Piece of Glass, Titanium, Pink Bird Egg, Production Manual(WD)7 |
+| Forest Ogre | Gasoline, Illuminating Crystal, Forest Ogre's Letter, Production Manual(CW)4 |
+| Tarantula Ben | Really Hard Shell, Sharp Tooth, Production Manual(KD)6 |
+
 
 ### Equipment
 | Level | Item | Slot |
@@ -244,6 +319,21 @@ Endgame preparation, rare monster, equipment premium.
 | 55 | Knight of Darkness | 1 |
 | 55 | Super Steel Golem | 66 |
 | 58 | Sandy Windy | 33, 75 |
+
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Tarantula Queen | Ceramic, Really Hard Shell, Motherly Love, Illuminating Crystal, Theo's Letter |
+| Steel Golem | Tree Golem's Letter, Faded Wood, Pink Bird Egg |
+| Samba Cactus | Cactus Flower, Illuminating Crystal |
+| Servanguy | Sheriff Badge, 6 Shot Revolver, Berserker's Breath, Swordmaster's Vow, 9mm Empty Cartridge |
+| Knight of Darkness | Gardel's Letter, Production Manual(Accessory)13, Production Manual(KD)8 |
+| Super Steel Golem | Heavy Metal, Special Metal, Super Steel Golem's Letter, Refinement Manual(A)4 |
+| Sandy Windy | Heart of Wind, Blue Blaze |
+
 
 ### Equipment
 | Level | Item | Slot |
@@ -284,6 +374,22 @@ Map premium, monster kuat, equipment endgame.
 | 69 | Solar | 29, 30 |
 | 70 | Aleph | 66, 74, 98 |
 | 72 | Bubble Dragon | 29, 30, 82 |
+
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| Soul Collector | Ring of Heaven Manual, Sharp nails, Production Manual(KD)9, Production Manual(WD)9 |
+| Meow-gician | Cat Cry, Spirit of Cat, Meow-gician's Letter, Production Manual(WW)Chaos |
+| Saloa | Fairy's Seduction, Pink Bird Egg, LaxativeBombManual(90) |
+| Computer Freak | Boiling Blood, Hot Blood, Computer Freak's Letter, Production Manual(CmW)5 |
+| Succubus | Hot Blood, Production Manual(Accessory)33, Refinement Manual(G)6 |
+| Solar | Pumpkin Lamp Manual, Luxury Orb Manual, Magic Lamp Manual, Ring of Heaven Manual |
+| Aleph | Moonstone, Blue Crystal, Production Manual(MD)9, Pink Bird Egg |
+| Bubble Dragon | Manual for Elemental Stone(natural Stone), Manual for Rune Stone(Soul Rune Stone), Production Manual(WD)13 |
+
 
 ### Equipment
 Data tidak tersedia di band ini. Equipment progression tercatat sampai L55–65.
@@ -326,6 +432,25 @@ Map tertinggi, monster elite, endgame content.
 | 95 | Pedron | 69, 98 |
 | 96 | Notorsonia | 43 |
 | 98 | Ghost Midnight | 66 |
+
+### Notable Drops
+
+Data drop dari client drop table (`BINARY_CONFIRMED`). Item yang ditampilkan adalah item bernama yang tersedia di client data; daftar lengkap per monster tersedia di research layer.
+
+| Monster | Notable Drops |
+|---|---|
+| AquaKing Yamok | A Piece of Fingernail, Cow's horn, Steel Plated Scales, Wolf's Canine, Swordmaster's Breath |
+| Queen Meroa | Jewelry Box, Winged Seed, It Girl's Mirror, Shiny Thread |
+| Cool Guy | Blue Crystal, Boiling Blood, Ice, Cool Guy's Love Letter, Production Manual(KD)12 |
+| High Nixie | Starfish, Crystal of Nixie, High Nixie's Letter, Refinement Manual(C)5 |
+| Dullahan | Dullahan's Sign, Dullahan's Tear, Dullahan's Sweat, Water Crystal, Grenade Manual(10)  |
+| Platinum Plumber | Platinum Antennae, Boiling Blood, Grenade Manual(20) , Production Manual(WW)7 |
+| Cankura | Golden Fur, Poisonous Claws, Production Manual(KW)8, Production Manual(CW)8 |
+| Bell | Heart Bell, Blue Crystal, Water Balloon, Water Crystal, Refinement Manual(C)8 |
+| Afro Rock | Pick, Broken Guitar String, Broccoli |
+| Notorsonia | Hair Pin, Babybell, Hope Pouch, Soul's Melody, Heart Bell |
+| Ghost Midnight | Ectoplasm, Cold Heart, Blue Crystal, Production Manual(MD)14 |
+
 
 ### Equipment
 Data tidak tersedia di band ini. Equipment progression tercatat sampai L55–65.
