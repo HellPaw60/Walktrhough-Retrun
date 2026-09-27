@@ -23,7 +23,7 @@
 | NPC names | `PROBABLE` | 293 resolved from `monsters.edt` |
 | Quest descriptions | `CLIENT_FACT` | 717 records from `flag.edt` |
 | Skill binary structure | `BINARY_CONFIRMED` | 362 records/file × 20 files; fixed 38-field layout; chain parse exact EOF 20/20 |
-| Skill semantic mapping | `BINARY_CONFIRMED` / `PROBABLE` | field[23]→buff.edt 103/103, field[27]→buff.edt 20/20 (`BINARY_CONFIRMED`); prereq chains, element, projectile, variant axis via cross-build v8 schema (`PROBABLE`) — see `SKILL_V7_SEMANTIC_RESEARCH.md` |
+Skill semantic mapping | `BINARY_CONFIRMED` / `PROBABLE` | field[23]/field[27]/field[30]/field[31]/field[37] → buff.edt (all `BINARY_CONFIRMED` via cross-table joins: 103/103, 20/20, 3/3, 5/5, 2/2); prereq chains, element, projectile, variant axis remain `PROBABLE` |
 | Skill variant axis | `PROBABLE` | skill01–20 = level/rank variants; files 11–20 = second tier (reset+spike); uskill01–20 = extended family |
 | Actual drop source | `BINARY_CONFIRMED` | `minimap/drop_1.edt` (4,006 rows) + drop_2/3 — pipe-delimited (item_id, cumulative_rate); monster field13 → row N; Piya→Piya's Egg verified 7/7 vs wiki |
 | field[30] buff_3_id | `BINARY_CONFIRMED` | 3/3 nonzero join buff.edt (Shatter Armor/Time Bomb→급습, Blade Waltz→제압1) |
